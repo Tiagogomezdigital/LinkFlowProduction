@@ -1,11 +1,18 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { supabaseAdmin, supabasePublic } from "@/lib/supabase"
+
+const supabase = supabaseAdmin ?? supabasePublic
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
     const slug = params.slug
     const userAgent = request.headers.get("user-agent") || ""
-    const ip = request.headers.get("x-forwarded-for") || "unknown"
+    const ip =
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("x-real-ip") ||
+      request.headers.get("x-nf-client-connection-ip") ||
+      request.headers.get("client-ip") ||
+      "unknown"
     const referrer = request.headers.get("referer") || ""
 
     console.log(`🔍 Redirecionamento via API para slug: ${slug}`)

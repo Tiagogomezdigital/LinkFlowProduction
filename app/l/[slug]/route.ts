@@ -1,11 +1,20 @@
 import { type NextRequest, NextResponse } from "next/server"
-import { supabase } from "@/lib/supabase"
+import { supabaseAdmin, supabasePublic } from "@/lib/supabase"
+
+// Se service role estiver configurado, utilizamos o client admin (somente no servidor)
+const supabase = supabaseAdmin ?? supabasePublic
 
 export async function GET(request: NextRequest, { params }: { params: { slug: string } }) {
   try {
     const slug = params.slug
     const userAgent = request.headers.get("user-agent") || ""
-    const ip = request.headers.get("x-forwarded-for") || "unknown"
+    // Netlify pode usar cabeçalhos diferentes para o IP do cliente
+    const ip =
+      request.headers.get("x-forwarded-for") ||
+      request.headers.get("x-real-ip") ||
+      request.headers.get("x-nf-client-connection-ip") ||
+      request.headers.get("client-ip") ||
+      "unknown"
     const referrer = request.headers.get("referer") || ""
 
     console.log(`🔍 Iniciando redirecionamento para slug: ${slug}`)
