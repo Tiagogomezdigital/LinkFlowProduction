@@ -1,0 +1,502 @@
+[
+  {
+    "table_name": "audit_logs",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "action",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "table_name",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "record_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "old_values",
+    "data_type": "jsonb"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "new_values",
+    "data_type": "jsonb"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "ip_address",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "user_agent",
+    "data_type": "text"
+  },
+  {
+    "table_name": "audit_logs",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "backup_logs",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "backup_logs",
+    "column_name": "backup_type",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "backup_logs",
+    "column_name": "file_path",
+    "data_type": "text"
+  },
+  {
+    "table_name": "backup_logs",
+    "column_name": "file_size",
+    "data_type": "bigint"
+  },
+  {
+    "table_name": "backup_logs",
+    "column_name": "status",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "backup_logs",
+    "column_name": "error_message",
+    "data_type": "text"
+  },
+  {
+    "table_name": "backup_logs",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "backup_logs",
+    "column_name": "completed_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "group_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "number_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "ip_address",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "user_agent",
+    "data_type": "text"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "device_type",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "referrer",
+    "data_type": "text"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "country",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "city",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "browser",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "os",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "utm_source",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "utm_medium",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks",
+    "column_name": "utm_campaign",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "group_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "number_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "ip_address",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "user_agent",
+    "data_type": "text"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "device_type",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "referrer",
+    "data_type": "text"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "country",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "city",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "browser",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "os",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "utm_source",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "utm_medium",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "utm_campaign",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_bots_backup",
+    "column_name": "backup_reason",
+    "data_type": "text"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "group_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "number_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "ip_address",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "user_agent",
+    "data_type": "text"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "device_type",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "referrer",
+    "data_type": "text"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "country",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "city",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "browser",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "os",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "utm_source",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "utm_medium",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "clicks_future_backup",
+    "column_name": "utm_campaign",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "group_id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "group_name",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "slug",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "description",
+    "data_type": "text"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "is_active",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "total_numbers",
+    "data_type": "bigint"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "active_numbers",
+    "data_type": "bigint"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "total_clicks",
+    "data_type": "bigint"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "clicks_today",
+    "data_type": "bigint"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "clicks_this_week",
+    "data_type": "bigint"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "clicks_this_month",
+    "data_type": "bigint"
+  },
+  {
+    "table_name": "group_stats",
+    "column_name": "last_click_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "groups",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "groups",
+    "column_name": "name",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "groups",
+    "column_name": "slug",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "groups",
+    "column_name": "description",
+    "data_type": "text"
+  },
+  {
+    "table_name": "groups",
+    "column_name": "default_message",
+    "data_type": "text"
+  },
+  {
+    "table_name": "groups",
+    "column_name": "is_active",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "groups",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "groups",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "title",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "message",
+    "data_type": "text"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "type",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "is_read",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "metadata",
+    "data_type": "jsonb"
+  },
+  {
+    "table_name": "notifications",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "system_settings",
+    "column_name": "id",
+    "data_type": "uuid"
+  },
+  {
+    "table_name": "system_settings",
+    "column_name": "key",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "system_settings",
+    "column_name": "value",
+    "data_type": "text"
+  },
+  {
+    "table_name": "system_settings",
+    "column_name": "description",
+    "data_type": "text"
+  },
+  {
+    "table_name": "system_settings",
+    "column_name": "category",
+    "data_type": "character varying"
+  },
+  {
+    "table_name": "system_settings",
+    "column_name": "is_public",
+    "data_type": "boolean"
+  },
+  {
+    "table_name": "system_settings",
+    "column_name": "created_at",
+    "data_type": "timestamp with time zone"
+  },
+  {
+    "table_name": "system_settings",
+    "column_name": "updated_at",
+    "data_type": "timestamp with time zone"
+  }
+]

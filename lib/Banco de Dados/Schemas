@@ -1,0 +1,89 @@
+[
+  {
+    "schema_name": "pg_toast"
+  },
+  {
+    "schema_name": "pg_catalog"
+  },
+  {
+    "schema_name": "information_schema"
+  },
+  {
+    "schema_name": "audit_sandbox"
+  },
+  {
+    "schema_name": "pgbouncer"
+  },
+  {
+    "schema_name": "realtime"
+  },
+  {
+    "schema_name": "vault"
+  },
+  {
+    "schema_name": "graphql_public"
+  },
+  {
+    "schema_name": "graphql"
+  },
+  {
+    "schema_name": "storage"
+  },
+  {
+    "schema_name": "auth"
+  },
+  {
+    "schema_name": "public"
+  },
+  {
+    "schema_name": "pg_temp_8"
+  },
+  {
+    "schema_name": "pg_toast_temp_8"
+  },
+  {
+    "schema_name": "pg_temp_9"
+  },
+  {
+    "schema_name": "pg_toast_temp_9"
+  },
+  {
+    "schema_name": "pg_temp_7"
+  },
+  {
+    "schema_name": "pg_toast_temp_7"
+  },
+  {
+    "schema_name": "pg_temp_11"
+  },
+  {
+    "schema_name": "pg_toast_temp_11"
+  },
+  {
+    "schema_name": "pg_temp_13"
+  },
+  {
+    "schema_name": "pg_toast_temp_13"
+  },
+  {
+    "schema_name": "extensions"
+  },
+  {
+    "schema_name": "pg_temp_14"
+  },
+  {
+    "schema_name": "pg_toast_temp_14"
+  },
+  {
+    "schema_name": "pg_temp_15"
+  },
+  {
+    "schema_name": "pg_toast_temp_15"
+  },
+  {
+    "schema_name": "pg_temp_16"
+  },
+  {
+    "schema_name": "pg_toast_temp_16"
+  }
+]

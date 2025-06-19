@@ -1,0 +1,357 @@
+[
+  {
+    "routine_name": "get_daily_summary",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_daily_groups_detailed",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_hourly_distribution",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_device_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_location_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_all_tables",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_all_views",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_all_functions",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "lf_daily_clicks_v1",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "lf_clicks_summary_v1",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_analytics",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_clicks_detailed",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_clicks_by_hour",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_groups_summary_advanced",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_top_numbers",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_numbers_by_group_id",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_production_clicks_by_hour",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_quick_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_next_number",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_temporal_trends",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_production_group_info",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_table_columns",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_top_numbers_by_clicks",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_top_groups_by_clicks",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "create_data_backup",
+    "routine_type": "FUNCTION",
+    "data_type": "jsonb"
+  },
+  {
+    "routine_name": "test_secure_functions",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "update_updated_at_column",
+    "routine_type": "FUNCTION",
+    "data_type": "trigger"
+  },
+  {
+    "routine_name": "register_click",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_name": "check_slug_availability",
+    "routine_type": "FUNCTION",
+    "data_type": "boolean"
+  },
+  {
+    "routine_name": "get_daily_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_advanced_click_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_advanced_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_dashboard_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "register_click_v2",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_name": "get_daily_clicks_advanced",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "register_webhook_event",
+    "routine_type": "FUNCTION",
+    "data_type": "uuid"
+  },
+  {
+    "routine_name": "get_daily_clicks_chart",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_dashboard_summary_secure",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_device_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_device_stats_secure",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_location_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_browser_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_os_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_utm_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_analytics_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_click_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_advanced_analytics",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_clicks_analytics",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_performance_analysis",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_groups_with_stats_secure",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_hourly_clicks_secure",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_production_group_clicks",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_production_group_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_production_top_numbers",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "register_click_v2",
+    "routine_type": "FUNCTION",
+    "data_type": "void"
+  },
+  {
+    "routine_name": "get_debug_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_daily_clicks_history",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_system_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_day_clicks_by_groups",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_day_clicks_detail",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "test_history_functions",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "create_sample_clicks_data",
+    "routine_type": "FUNCTION",
+    "data_type": "text"
+  },
+  {
+    "routine_name": "check_duplicate_clicks",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_group_clicks_today",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_daily_group_clicks",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_daily_group_number_clicks",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_device_stats_v3",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_country_stats_v3",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_daily_stats",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  },
+  {
+    "routine_name": "get_utm_source_stats_v3",
+    "routine_type": "FUNCTION",
+    "data_type": "record"
+  }
+]

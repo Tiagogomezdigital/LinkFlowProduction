@@ -1,0 +1,287 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* Design System Colors */
+    --background: 0 0% 0%; /* #000000 - preto puro */
+    --foreground: 0 0% 100%; /* #ffffff - branco */
+    --card: 215 28% 17%; /* #1e293b - slate-800 */
+    --card-foreground: 0 0% 100%;
+    --popover: 215 28% 17%;
+    --popover-foreground: 0 0% 100%;
+    --primary: 84 81% 55%; /* #a3e635 - lime-400 */
+    --primary-foreground: 0 0% 0%;
+    --secondary: 215 28% 17%;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 217 33% 17%;
+    --muted-foreground: 215 20% 65%; /* #94a3b8 - slate-400 */
+    --accent: 215 28% 17%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 62% 30%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 215 28% 17%; /* #334155 - slate-700 */
+    --input: 215 28% 17%;
+    --ring: 84 81% 55%;
+    --radius: 0.75rem;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+
+  body {
+    @apply bg-black text-white antialiased;
+    font-family: "Inter", system-ui, -apple-system, sans-serif;
+  }
+
+  /* Tipografia Refinada */
+  .ds-page-title {
+    @apply text-2xl font-bold text-white mb-2;
+  }
+
+  .ds-page-subtitle {
+    @apply text-sm text-slate-400 font-normal mb-6;
+  }
+
+  .ds-page-description {
+    @apply text-sm text-slate-400 mb-8;
+  }
+
+  .ds-section-title {
+    @apply text-lg font-semibold text-white mb-6;
+  }
+
+  .ds-breadcrumb {
+    @apply text-sm font-medium text-slate-500;
+  }
+
+  .ds-card-number {
+    @apply text-4xl font-light font-mono text-white leading-none text-center;
+  }
+
+  .ds-card-label {
+    @apply text-sm font-medium uppercase tracking-wide text-slate-400 text-center;
+  }
+
+  .ds-card-description {
+    @apply text-xs text-slate-500 font-normal text-center opacity-75;
+  }
+
+  .ds-table-header {
+    @apply text-xs font-bold uppercase tracking-wider text-slate-400;
+  }
+
+  .ds-table-data {
+    @apply text-sm font-medium text-white;
+  }
+
+  .ds-group-name {
+    @apply text-base font-semibold text-white;
+  }
+
+  .ds-phone-number {
+    @apply text-base font-mono text-white;
+  }
+
+  .ds-group-associated {
+    @apply text-sm font-medium text-slate-300;
+  }
+
+  .ds-slug-url {
+    @apply text-sm font-mono text-slate-500 bg-slate-900 px-3 py-1 rounded;
+  }
+
+  .ds-status-badge {
+    @apply text-xs font-medium uppercase tracking-wide;
+  }
+
+  .ds-numbers-mono {
+    @apply text-sm font-mono text-slate-300;
+  }
+
+  .ds-last-used {
+    @apply text-xs text-slate-500 font-normal;
+  }
+
+  .ds-trend-up {
+    @apply text-sm font-mono text-green-400;
+  }
+
+  .ds-trend-down {
+    @apply text-sm font-mono text-red-400;
+  }
+
+  .ds-trend-stable {
+    @apply text-sm font-mono text-slate-400;
+  }
+
+  .ds-status-active {
+    @apply text-green-400 bg-green-400/10;
+  }
+
+  .ds-status-inactive {
+    @apply text-red-400 bg-red-400/10;
+  }
+
+  .ds-container {
+    @apply p-6;
+  }
+
+  .ds-container-mobile {
+    @apply px-4 py-4;
+  }
+
+  .ds-container-tablet {
+    @apply px-5 py-5;
+  }
+
+  .ds-container-desktop {
+    @apply px-6 py-6;
+  }
+
+  .ds-card {
+    @apply bg-slate-800 p-6 rounded-xl shadow-2xl border border-slate-800 hover:scale-105 hover:shadow-2xl transition-all duration-200;
+  }
+
+  .ds-card-static {
+    @apply bg-slate-800 p-6 rounded-xl shadow-lg border border-slate-800;
+  }
+
+  .ds-card-icon {
+    @apply w-8 h-8 opacity-80;
+  }
+
+  .ds-button-primary {
+    @apply bg-lime-400 text-black hover:bg-lime-500 text-sm font-semibold px-8 py-3 rounded-lg shadow-lg hover:shadow-xl transition-all duration-200;
+  }
+
+  .ds-button-secondary {
+    @apply bg-slate-700 text-white hover:bg-slate-600 px-4 py-2 rounded-lg transition-all duration-200;
+  }
+
+  .ds-button-outline {
+    @apply border border-slate-600 text-slate-400 hover:bg-slate-800 px-4 py-2 rounded-lg transition-all duration-200;
+  }
+
+  .ds-button-icon {
+    @apply w-10 h-10 bg-slate-700 hover:bg-slate-600 rounded-lg transition-all duration-200 flex items-center justify-center;
+  }
+
+  .ds-input {
+    @apply bg-slate-800 border border-slate-600 focus:border-lime-400 text-white placeholder:text-slate-500 h-10 px-3 rounded-lg focus:ring-2 focus:ring-lime-400/20 transition-all duration-200;
+  }
+
+  .ds-table {
+    @apply bg-slate-800 rounded-xl border border-slate-700 overflow-hidden;
+  }
+
+  .ds-table-container {
+    @apply border border-slate-800 rounded-xl overflow-hidden;
+  }
+
+  .ds-table-header-sticky {
+    @apply bg-slate-800 backdrop-blur;
+  }
+
+  .ds-table-row {
+    @apply py-6 border-b border-slate-700 hover:bg-slate-800/50 transition-colors duration-200;
+  }
+
+  .ds-table-cell {
+    @apply px-6 py-4;
+  }
+
+  .ds-badge-active {
+    @apply bg-green-500/20 text-green-400 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+  }
+
+  .ds-badge-inactive {
+    @apply bg-red-500/20 text-red-400 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+  }
+
+  .ds-badge-neutral {
+    @apply bg-slate-600/50 text-slate-300 px-3 py-1 rounded-full text-xs font-medium uppercase tracking-wide;
+  }
+
+  .ds-modal-overlay {
+    @apply bg-black/60 backdrop-blur;
+  }
+
+  .ds-modal-container {
+    @apply bg-slate-800 border border-slate-700 rounded-xl p-6 shadow-2xl;
+  }
+
+  .ds-grid-1 {
+    @apply grid grid-cols-1 gap-6;
+  }
+
+  .ds-grid-2 {
+    @apply grid grid-cols-1 md:grid-cols-2 gap-6;
+  }
+
+  .ds-grid-3 {
+    @apply grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6;
+  }
+
+  .ds-grid-4 {
+    @apply grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6;
+  }
+
+  .ds-space-micro {
+    @apply space-y-2;
+  }
+
+  .ds-space-small {
+    @apply space-y-4;
+  }
+
+  .ds-space-medium {
+    @apply space-y-6;
+  }
+
+  .ds-space-large {
+    @apply space-y-8;
+  }
+
+  .ds-space-xl {
+    @apply space-y-12;
+  }
+
+  .ds-loading {
+    @apply animate-pulse bg-slate-700;
+  }
+
+  .ds-disabled {
+    @apply opacity-50 cursor-not-allowed;
+  }
+
+  .ds-focus {
+    @apply focus:ring-2 focus:ring-lime-400/20 focus:border-lime-400;
+  }
+
+  .ds-link {
+    @apply hover:text-lime-300 underline-offset-4 hover:underline transition-colors duration-200;
+  }
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  @apply bg-slate-900;
+}
+
+::-webkit-scrollbar-thumb {
+  @apply bg-slate-700 rounded-full;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  @apply bg-slate-600;
+}
