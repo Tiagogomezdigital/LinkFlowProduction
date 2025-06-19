@@ -14,6 +14,13 @@ export async function middleware(req: NextRequest) {
       data: { session },
     } = await supabase.auth.getSession()
 
+    // Validação extra da sessão para evitar cookies expirados
+    let hasValidUser = false
+    if (session?.user?.id) {
+      const { data: userValidation, error: userValidationError } = await supabase.auth.getUser()
+      hasValidUser = !!userValidation?.user && !userValidationError
+    }
+
     const path = req.nextUrl.pathname
     const isLoginRoute = path === "/login"
     const isAuthCallback = path === "/auth/callback"
@@ -31,7 +38,7 @@ export async function middleware(req: NextRequest) {
     console.log("🛡️ Middleware Debug:", {
       path,
       hasSession: !!session,
-      hasUser: !!session?.user,
+      hasValidUser,
       userId: session?.user?.id,
       isPublicRoute,
       isLoginRoute,
@@ -47,7 +54,7 @@ export async function middleware(req: NextRequest) {
     }
 
     // Bloquear qualquer rota privada quando não houver sessão
-    if (!isPublicRoute && !session?.user?.id) {
+    if (!isPublicRoute && !hasValidUser) {
       console.log("❌ Acesso negado (rota privada), redirecionando para login")
 
       // Evitar loops de redirecionamento
@@ -57,27 +64,18 @@ export async function middleware(req: NextRequest) {
       }
     }
 
-    // Se estiver na página de login, valide se o token ainda é realmente válido
-    if (isLoginRoute && session?.user?.id) {
-      const { data: userValidation, error: userValidationError } = await supabase.auth.getUser()
+    // Redirecionar se já logado e tentar acessar login
+    if (isLoginRoute && hasValidUser) {
+      console.log("✅ Usuário já logado tentando acessar login, redirecionando para dashboard")
 
-      if (userValidation?.user && !userValidationError) {
-        console.log("✅ Sessão válida, redirecionando usuário logado para dashboard")
-
-        // Evitar loops de redirecionamento
-        if (!req.headers.get("referer")?.includes("/admin/dashboard")) {
-          const redirectUrl = new URL("/admin/dashboard", req.url)
-          return NextResponse.redirect(redirectUrl)
-        }
-      } else {
-        console.log("ℹ️ Cookie de sessão inválido ou expirado, exibindo tela de login")
+      // Evitar loops de redirecionamento
+      if (!req.headers.get("referer")?.includes("/admin/dashboard")) {
+        const redirectUrl = new URL("/admin/dashboard", req.url)
+        return NextResponse.redirect(redirectUrl)
       }
     }
 
-    // Refresh da sessão se necessário
-    if (session) {
-      await supabase.auth.getUser()
-    }
+    // Nenhuma ação extra necessária aqui, pois já validamos a sessão
 
     return res
   } catch (error) {
