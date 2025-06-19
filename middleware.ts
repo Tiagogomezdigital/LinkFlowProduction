@@ -69,8 +69,8 @@ export async function middleware(req: NextRequest) {
       console.log("✅ Usuário já logado tentando acessar login, redirecionando para dashboard")
 
       // Evitar loops de redirecionamento
-      if (!req.headers.get("referer")?.includes("/admin/dashboard")) {
-        const redirectUrl = new URL("/admin/dashboard", req.url)
+      if (!req.headers.get("referer")?.includes("/admin/grupos")) {
+        const redirectUrl = new URL("/admin/grupos", req.url)
         return NextResponse.redirect(redirectUrl)
       }
     }

@@ -8,7 +8,7 @@ export async function GET(request: NextRequest) {
   try {
     const requestUrl = new URL(request.url)
     const code = requestUrl.searchParams.get("code")
-    const next = requestUrl.searchParams.get("next") ?? "/admin/dashboard"
+    const next = requestUrl.searchParams.get("next") ?? "/admin/grupos"
 
     console.log("📊 Callback params:", {
       code: code ? "Presente" : "Ausente",

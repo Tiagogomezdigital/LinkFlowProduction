@@ -28,7 +28,7 @@ export default function HomePage() {
 
         if (session?.user) {
           console.log("✅ Usuário logado, redirecionando para dashboard")
-          router.replace("/admin/dashboard")
+          router.replace("/admin/grupos")
         } else {
           console.log("❌ Usuário não logado, redirecionando para login")
           router.replace("/login")

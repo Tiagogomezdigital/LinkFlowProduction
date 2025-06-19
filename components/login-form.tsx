@@ -74,8 +74,8 @@ export function LoginForm() {
         // Refresh do router para atualizar o estado de auth
         router.refresh()
 
-        // Redirecionar para dashboard
-        router.push("/admin/dashboard")
+        // Redirecionar para grupos
+        router.push("/admin/grupos")
 
         return
       }
