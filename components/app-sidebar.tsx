@@ -1,8 +1,9 @@
 "use client"
 
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import { Users, Phone, BarChart2, CalendarDays, Activity, LogOut, ChevronLeft } from "lucide-react"
+import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
 
 interface AppSidebarProps {
   onClose?: () => void
@@ -10,6 +11,8 @@ interface AppSidebarProps {
 
 export function AppSidebar({ onClose }: AppSidebarProps) {
   const pathname = usePathname()
+  const router = useRouter()
+  const supabase = createClientComponentClient()
 
   const isActive = (path: string) => {
     return pathname === path
@@ -30,6 +33,16 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
       ],
     },
   ]
+
+  const handleLogout = async () => {
+    try {
+      await supabase.auth.signOut()
+      router.refresh()
+      router.push("/login")
+    } catch (error) {
+      console.error("Erro ao fazer logout:", error)
+    }
+  }
 
   return (
     <div className="w-72 h-screen bg-slate-900 border-r border-slate-800 flex flex-col">
@@ -112,7 +125,7 @@ export function AppSidebar({ onClose }: AppSidebarProps) {
             <p className="text-slate-500 text-xs">admin@linkflow.com</p>
           </div>
         </div>
-        <button className="flex items-center gap-2 text-slate-400 hover:text-white text-sm w-full px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
+        <button onClick={handleLogout} className="flex items-center gap-2 text-slate-400 hover:text-white text-sm w-full px-3 py-2 rounded-lg hover:bg-slate-800 transition-colors">
           <LogOut className="w-4 h-4" />
           Sair
         </button>
