@@ -73,41 +73,9 @@ export async function middleware(req: NextRequest) {
       await supabase.auth.getUser()
     }
 
-    // Em caso de erro, redirecionar para login se a rota não for pública
-    const errorPath = req.nextUrl.pathname
-    const isErrorPublicRoute =
-      errorPath === "/login" ||
-      errorPath === "/auth/callback" ||
-      errorPath.startsWith("/l") ||
-      errorPath.startsWith("/redirect") ||
-      errorPath.startsWith("/api/redirect") ||
-      errorPath === "/error"
-
-    if (!isErrorPublicRoute) {
-      console.log("⚠️ Erro no middleware, redirecionando para login por segurança")
-      const redirectUrl = new URL("/login", req.url)
-      return NextResponse.redirect(redirectUrl)
-    }
-
     return res
   } catch (error) {
     console.error("❌ Erro no middleware:", error)
-
-    // Em caso de erro, redirecionar para login se a rota não for pública
-    const errorPath = req.nextUrl.pathname
-    const isErrorPublicRoute =
-      errorPath === "/login" ||
-      errorPath === "/auth/callback" ||
-      errorPath.startsWith("/l") ||
-      errorPath.startsWith("/redirect") ||
-      errorPath.startsWith("/api/redirect") ||
-      errorPath === "/error"
-
-    if (!isErrorPublicRoute) {
-      console.log("⚠️ Erro no middleware, redirecionando para login por segurança")
-      const redirectUrl = new URL("/login", req.url)
-      return NextResponse.redirect(redirectUrl)
-    }
 
     return res
   }
