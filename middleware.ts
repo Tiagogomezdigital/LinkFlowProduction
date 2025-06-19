@@ -15,9 +15,17 @@ export async function middleware(req: NextRequest) {
     } = await supabase.auth.getSession()
 
     const path = req.nextUrl.pathname
-    const isAdminRoute = path.startsWith("/admin")
     const isLoginRoute = path === "/login"
     const isAuthCallback = path === "/auth/callback"
+
+    // Rotas de redirecionamento público (acessíveis por qualquer pessoa)
+    const isRedirectRoute = path.startsWith("/l") || path.startsWith("/redirect") || path.startsWith("/api/redirect")
+
+    // Página de erro pública
+    const isErrorRoute = path === "/error"
+
+    // Lista consolidada de rotas que NÃO exigem autenticação
+    const isPublicRoute = isLoginRoute || isAuthCallback || isRedirectRoute || isErrorRoute
 
     // Log detalhado para debug
     console.log("🛡️ Middleware Debug:", {
@@ -25,7 +33,7 @@ export async function middleware(req: NextRequest) {
       hasSession: !!session,
       hasUser: !!session?.user,
       userId: session?.user?.id,
-      isAdminRoute,
+      isPublicRoute,
       isLoginRoute,
       isAuthCallback,
       userAgent: req.headers.get("user-agent")?.substring(0, 50),
@@ -38,9 +46,9 @@ export async function middleware(req: NextRequest) {
       return res
     }
 
-    // Proteger rotas admin
-    if (isAdminRoute && !session?.user?.id) {
-      console.log("❌ Acesso negado para área admin, redirecionando para login")
+    // Bloquear qualquer rota privada quando não houver sessão
+    if (!isPublicRoute && !session?.user?.id) {
+      console.log("❌ Acesso negado (rota privada), redirecionando para login")
 
       // Evitar loops de redirecionamento
       if (!req.headers.get("referer")?.includes("/login")) {
@@ -65,12 +73,37 @@ export async function middleware(req: NextRequest) {
       await supabase.auth.getUser()
     }
 
+    // Em caso de erro, redirecionar para login se a rota não for pública
+    const errorPath = req.nextUrl.pathname
+    const isErrorPublicRoute =
+      errorPath === "/login" ||
+      errorPath === "/auth/callback" ||
+      errorPath.startsWith("/l") ||
+      errorPath.startsWith("/redirect") ||
+      errorPath.startsWith("/api/redirect") ||
+      errorPath === "/error"
+
+    if (!isErrorPublicRoute) {
+      console.log("⚠️ Erro no middleware, redirecionando para login por segurança")
+      const redirectUrl = new URL("/login", req.url)
+      return NextResponse.redirect(redirectUrl)
+    }
+
     return res
   } catch (error) {
     console.error("❌ Erro no middleware:", error)
 
-    // Em caso de erro, permitir acesso mas logar
-    if (req.nextUrl.pathname.startsWith("/admin")) {
+    // Em caso de erro, redirecionar para login se a rota não for pública
+    const errorPath = req.nextUrl.pathname
+    const isErrorPublicRoute =
+      errorPath === "/login" ||
+      errorPath === "/auth/callback" ||
+      errorPath.startsWith("/l") ||
+      errorPath.startsWith("/redirect") ||
+      errorPath.startsWith("/api/redirect") ||
+      errorPath === "/error"
+
+    if (!isErrorPublicRoute) {
       console.log("⚠️ Erro no middleware, redirecionando para login por segurança")
       const redirectUrl = new URL("/login", req.url)
       return NextResponse.redirect(redirectUrl)
