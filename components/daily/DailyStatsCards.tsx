@@ -3,14 +3,18 @@
 import { Card } from '@/components/ui/card'
 import { MousePointerClick, Users, Clock, Phone } from 'lucide-react'
 
-export function DailyStatsCards() {
-  const stats = {
-    clicks: 1280,
-    activeGroups: 25,
-    peakHour: 14,
-    activeNumbers: 87,
-  }
+interface DailyStats {
+  clicks: number
+  activeGroups: number
+  peakHour: number
+  activeNumbers: number
+}
 
+interface DailyStatsCardsProps {
+  stats: DailyStats
+}
+
+export function DailyStatsCards({ stats }: DailyStatsCardsProps) {
   const cards = [
     { label: 'Cliques Totais', value: stats.clicks.toLocaleString(), icon: MousePointerClick },
     { label: 'Grupos Ativos', value: stats.activeGroups, icon: Users },
@@ -31,4 +35,4 @@ export function DailyStatsCards() {
       ))}
     </div>
   )
-} 
+}

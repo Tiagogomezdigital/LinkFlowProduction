@@ -3,12 +3,23 @@
 import { Card } from '@/components/ui/card'
 import { MousePointerClick, Users, Phone, Activity } from 'lucide-react'
 
-export function KpiCards() {
+interface KpiData {
+  totalClicks: number
+  activeGroups: number
+  totalNumbers: number
+  clicksToday: number
+}
+
+interface KpiCardsProps {
+  data: KpiData
+}
+
+export function KpiCards({ data }: KpiCardsProps) {
   const items = [
-    { label: 'Total de Cliques', value: '10.357', icon: MousePointerClick },
-    { label: 'Grupos Ativos', value: '46', icon: Users },
-    { label: 'Números', value: '0', icon: Phone },
-    { label: 'Cliques Hoje', value: '0', icon: Activity },
+    { label: 'Total de Cliques', value: data.totalClicks.toLocaleString(), icon: MousePointerClick },
+    { label: 'Grupos Ativos', value: data.activeGroups.toString(), icon: Users },
+    { label: 'Números', value: data.totalNumbers.toString(), icon: Phone },
+    { label: 'Cliques Hoje', value: data.clicksToday.toLocaleString(), icon: Activity },
   ]
 
   return (
@@ -23,4 +34,4 @@ export function KpiCards() {
       ))}
     </div>
   )
-} 
+}

@@ -1,30 +1,6 @@
 import { supabase } from "@/lib/supabase"
-import type { GroupStats, DailyStats, DeviceStats, GroupClickStats } from "@/lib/types"
+import type { GroupStats, DailyStats, DeviceStats, GroupClickStats, Click } from "@/lib/types"
 import { createClient } from "@/lib/supabase"
-
-interface Click {
-  created_at: string
-  device_type: string
-  group_id: string
-  visitor_id: string
-}
-
-interface Group {
-  id: string
-  name: string
-  slug: string
-}
-
-interface GroupClick {
-  group_id: string
-  groups: Group
-  count: number
-}
-
-interface DeviceClick {
-  device_type: string
-  count: number
-}
 
 export async function getGroupStats(): Promise<GroupStats[]> {
   try {
@@ -83,7 +59,7 @@ export async function getDashboardStats(dateFrom: Date, dateTo: Date, groupIds?:
 
     // Calcular métricas
     const totalClicks = count || 0
-    const uniqueVisitors = new Set((clicks as Click[])?.map((click) => click.visitor_id) || []).size
+    const uniqueVisitors = new Set((clicks as Click[])?.map((click) => click.ip_address) || []).size
     const daysDiff = Math.ceil((dateTo.getTime() - dateFrom.getTime()) / (1000 * 60 * 60 * 24)) + 1
     const averageClicksPerDay = totalClicks / daysDiff
 

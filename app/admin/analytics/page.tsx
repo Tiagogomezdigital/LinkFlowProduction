@@ -6,11 +6,36 @@ import { DeviceDistributionCard } from '@/components/analytics-dashboard/DeviceD
 import { HeatmapDailyCard } from '@/components/analytics-dashboard/HeatmapDailyCard'
 import { Button } from '@/components/ui/button'
 import { Download, RefreshCw } from 'lucide-react'
-import { useState } from 'react'
-import { format } from 'date-fns'
+import { useState, useEffect } from 'react'
+import { format, startOfDay, endOfDay } from 'date-fns'
+import { getDashboardStats } from '@/lib/api/stats'
 
 export default function AnalyticsDashboard() {
   const [lastUpdate, setLastUpdate] = useState(new Date())
+  const [kpiData, setKpiData] = useState({
+    totalClicks: 0,
+    activeGroups: 0,
+    totalNumbers: 0,
+    clicksToday: 0
+  })
+
+  useEffect(() => {
+    async function fetchData() {
+      try {
+        const today = new Date()
+        const stats = await getDashboardStats(startOfDay(today), endOfDay(today))
+        setKpiData({
+          totalClicks: stats.totalClicks,
+          activeGroups: 25, // Mock - implementar função para contar grupos ativos
+          totalNumbers: 87, // Mock - implementar função para contar números
+          clicksToday: stats.totalClicks
+        })
+      } catch (error) {
+        console.error('Erro ao buscar dados:', error)
+      }
+    }
+    fetchData()
+  }, [lastUpdate])
 
   const handleRefresh = () => {
     setLastUpdate(new Date())
@@ -38,7 +63,7 @@ export default function AnalyticsDashboard() {
       </div>
 
       {/* KPI Cards */}
-      <KpiCards />
+      <KpiCards data={kpiData} />
 
       {/* Grid */}
       <div className="grid lg:grid-cols-2 gap-8">
@@ -49,4 +74,4 @@ export default function AnalyticsDashboard() {
       <HeatmapDailyCard />
     </div>
   )
-} 
+}
