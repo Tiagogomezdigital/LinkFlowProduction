@@ -148,11 +148,15 @@ export async function updateNumber(id: string, updates: Partial<WhatsAppNumber>)
 
 export async function deleteNumber(id: string): Promise<void> {
   try {
-    const { error } = await supabase.from("whatsapp_numbers").delete().eq("id", id)
+    const { data, error } = await supabase.from("whatsapp_numbers").delete().eq("id", id).select()
 
     if (error) {
       console.error("Error deleting number:", error)
       throw error
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error("A exclusão falhou. Verifique as permissões ou se o número ainda existe.")
     }
   } catch (error) {
     console.error("Error in deleteNumber:", error)
