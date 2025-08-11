@@ -4,6 +4,11 @@ import { KpiCards } from '@/components/analytics-dashboard/KpiCards'
 import { TopGroupsCard } from '@/components/analytics-dashboard/TopGroupsCard'
 import { DeviceDistributionCard } from '@/components/analytics-dashboard/DeviceDistributionCard'
 import { HeatmapDailyCard } from '@/components/analytics-dashboard/HeatmapDailyCard'
+import { CountryStatsChart } from '@/components/country-stats-chart'
+import { BrowserStatsChart } from '@/components/browser-stats-chart'
+import { OSStatsChart } from '@/components/os-stats-chart'
+import { UTMStatsChart } from '@/components/utm-stats-chart'
+import { LocationStatsChart } from '@/components/location-stats-chart'
 import { Button } from '@/components/ui/button'
 import { Download, RefreshCw } from 'lucide-react'
 import { useState, useEffect } from 'react'
@@ -72,6 +77,37 @@ export default function AnalyticsDashboard() {
       </div>
 
       <HeatmapDailyCard />
+
+      {/* Estatísticas Avançadas */}
+      <div className="mt-8 space-y-6">
+        <div className="mb-6">
+          <h2 className="text-xl font-semibold text-white mb-2">Estatísticas Avançadas</h2>
+          <p className="text-slate-400 text-sm">Análise detalhada de localização, dispositivos e campanhas</p>
+        </div>
+        
+        {/* Grid de estatísticas avançadas */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <LocationStatsChart 
+            startDate={format(startOfDay(new Date()), 'yyyy-MM-dd')} 
+            endDate={format(endOfDay(new Date()), 'yyyy-MM-dd')} 
+          />
+          <BrowserStatsChart 
+            startDate={format(startOfDay(new Date()), 'yyyy-MM-dd')} 
+            endDate={format(endOfDay(new Date()), 'yyyy-MM-dd')} 
+          />
+        </div>
+        
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          <OSStatsChart 
+            startDate={format(startOfDay(new Date()), 'yyyy-MM-dd')} 
+            endDate={format(endOfDay(new Date()), 'yyyy-MM-dd')} 
+          />
+          <UTMStatsChart 
+            startDate={format(startOfDay(new Date()), 'yyyy-MM-dd')} 
+            endDate={format(endOfDay(new Date()), 'yyyy-MM-dd')} 
+          />
+        </div>
+      </div>
     </div>
   )
 }

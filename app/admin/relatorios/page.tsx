@@ -7,6 +7,11 @@ import { ClicksChart } from "@/components/clicks-chart"
 import { GroupsChart } from "@/components/groups-chart"
 import { DevicesChart } from "@/components/devices-chart"
 import { TopGroupsTable } from "@/components/top-groups-table"
+import { CountryStatsChart } from "@/components/country-stats-chart"
+import { BrowserStatsChart } from "@/components/browser-stats-chart"
+import { OSStatsChart } from "@/components/os-stats-chart"
+import { UTMStatsChart } from "@/components/utm-stats-chart"
+import { LocationStatsChart } from "@/components/location-stats-chart"
 import { useGroups } from "@/hooks/useGroups"
 import { toast } from "sonner"
 import { Badge } from "@/components/ui/badge"
@@ -163,6 +168,51 @@ export default function ReportsPage() {
       {filters.stats?.groupClicks && filters.stats.groupClicks.length === 0 && (
         <div className="text-center py-20 text-slate-400">Nenhum registro para este período/grupos. <button className="underline" onClick={()=>handleFiltersChange({ ...filters, groupIds: undefined, stats: undefined})}>Limpar filtros</button></div>
       )}
+
+      {/* Estatísticas Avançadas */}
+      {filters.stats?.groupClicks && filters.stats.groupClicks.length > 0 && (
+        <section className="w-full mt-8 space-y-6">
+          <div className="mb-6">
+            <h2 className="text-xl font-semibold text-white mb-2">Estatísticas Avançadas</h2>
+            <p className="text-slate-400 text-sm">Análise detalhada de localização, dispositivos e campanhas</p>
+          </div>
+          
+          {/* Grid de estatísticas */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <LocationStatsChart 
+              groupId={filters.groupIds?.[0]} 
+              startDate={format(filters.dateFrom, 'yyyy-MM-dd')} 
+              endDate={format(filters.dateTo, 'yyyy-MM-dd')} 
+            />
+            <DevicesChart 
+               dateFrom={filters.dateFrom} 
+               dateTo={filters.dateTo} 
+               groupIds={filters.groupIds} 
+             />
+          </div>
+          
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <BrowserStatsChart 
+              groupId={filters.groupIds?.[0]} 
+              startDate={format(filters.dateFrom, 'yyyy-MM-dd')} 
+              endDate={format(filters.dateTo, 'yyyy-MM-dd')} 
+            />
+            <OSStatsChart 
+              groupId={filters.groupIds?.[0]} 
+              startDate={format(filters.dateFrom, 'yyyy-MM-dd')} 
+              endDate={format(filters.dateTo, 'yyyy-MM-dd')} 
+            />
+          </div>
+          
+          <div className="grid grid-cols-1 gap-6">
+            <UTMStatsChart 
+              groupId={filters.groupIds?.[0]} 
+              startDate={format(filters.dateFrom, 'yyyy-MM-dd')} 
+              endDate={format(filters.dateTo, 'yyyy-MM-dd')} 
+            />
+          </div>
+        </section>
+      )}
     </div>
   )
-} 
+}
