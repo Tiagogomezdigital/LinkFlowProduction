@@ -329,11 +329,13 @@ export async function getFilteredStats(
     console.log("🔍 Buscando estatísticas filtradas...", { dateFrom, dateTo, groupIds })
 
     // Buscar todos os cliques do período/grupos, incluindo join com groups
+    // Removendo limite padrão do Supabase para evitar cap de 1000 registros
     let query = supabase
       .from("clicks")
       .select("group_id, created_at, groups(id, name, slug)")
       .gte("created_at", dateFrom.toISOString())
       .lte("created_at", dateTo.toISOString())
+      .limit(50000) // Limite alto para evitar problemas de performance
 
     if (groupIds?.length) {
       query = query.in("group_id", groupIds)

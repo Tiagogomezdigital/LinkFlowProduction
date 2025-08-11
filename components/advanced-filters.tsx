@@ -61,6 +61,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
   const quickOptions = [
     { value: "today", label: "Hoje", days: 0 },
     { value: "yesterday", label: "Ontem", days: 1 },
+    { value: "specific_date", label: "Data específica", days: -2 },
     { value: "last7days", label: "Últimos 7 dias", days: 7 },
     { value: "last30days", label: "Últimos 30 dias", days: 30 },
     { value: "last90days", label: "Últimos 90 dias", days: 90 },
@@ -109,7 +110,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
   const handleQuickSelect = (value: string) => {
     setQuickSelect(value)
     const option = quickOptions.find((opt) => opt.value === value)
-    if (!option || value === "custom") return
+    if (!option || value === "custom" || value === "specific_date") return
 
     // Garantir que a data de hoje seja sempre local
     const now = new Date()
@@ -172,7 +173,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
                 ))}
               </SelectContent>
             </Select>
-            {quickSelect === 'custom' && (
+            {(quickSelect === 'custom' || quickSelect === 'specific_date') && (
               <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                 <PopoverTrigger asChild>
                   <Button
@@ -184,7 +185,9 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
                   >
                     <Calendar className="mr-2 h-4 w-4" />
                     {dateRange.from ? (
-                      dateRange.to ? (
+                      quickSelect === 'specific_date' ? (
+                        format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
+                      ) : dateRange.to ? (
                         <>
                           {format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })} -{" "}
                           {format(dateRange.to, "dd/MM/yyyy", { locale: ptBR })}
@@ -193,24 +196,42 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
                         format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
                       )
                     ) : (
-                      <span>Selecione as datas</span>
+                      <span>{quickSelect === 'specific_date' ? 'Selecione uma data' : 'Selecione as datas'}</span>
                     )}
                   </Button>
                 </PopoverTrigger>
                 <PopoverContent className="w-auto p-0 bg-slate-700 border-slate-600" align="start">
-                  <CalendarComponent
-                    initialFocus
-                    mode="range"
-                    defaultMonth={dateRange.from}
-                    selected={{ from: dateRange.from, to: dateRange.to }}
-                    onSelect={(range) => {
-                      setDateRange({
-                        from: range?.from,
-                        to: range?.to,
-                      })
-                      setIsDatePickerOpen(false)
-                    }}
-                  />
+                  {quickSelect === 'specific_date' ? (
+                    <CalendarComponent
+                      initialFocus
+                      mode="single"
+                      defaultMonth={dateRange.from}
+                      selected={dateRange.from}
+                      onSelect={(selected: Date | undefined) => {
+                        if (selected) {
+                          setDateRange({
+                            from: startOfDay(selected),
+                            to: endOfDay(selected),
+                          })
+                        }
+                        setIsDatePickerOpen(false)
+                      }}
+                    />
+                  ) : (
+                    <CalendarComponent
+                      initialFocus
+                      mode="range"
+                      defaultMonth={dateRange.from}
+                      selected={{ from: dateRange.from, to: dateRange.to }}
+                      onSelect={(selected: { from: Date | undefined; to: Date | undefined } | undefined) => {
+                        setDateRange({
+                          from: selected?.from,
+                          to: selected?.to,
+                        })
+                        setIsDatePickerOpen(false)
+                      }}
+                    />
+                  )}
                 </PopoverContent>
               </Popover>
             )}
@@ -274,4 +295,4 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
       </div>
     </div>
   )
-} 
+}
