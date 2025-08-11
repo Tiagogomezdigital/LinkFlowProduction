@@ -88,11 +88,15 @@ export async function updateGroup(id: string, updates: Partial<Group>): Promise<
 
 export async function deleteGroup(id: string): Promise<void> {
   try {
-    const { error } = await supabase.from("groups").delete().eq("id", id)
+    const { data, error } = await supabase.from("groups").delete().eq("id", id).select()
 
     if (error) {
       console.error("Error deleting group:", error)
       throw error
+    }
+
+    if (!data || data.length === 0) {
+      throw new Error("A exclusão falhou. Verifique as permissões ou se o grupo ainda existe.")
     }
   } catch (error) {
     console.error("Error in deleteGroup:", error)

@@ -316,15 +316,18 @@ CREATE POLICY "Allow public read access on whatsapp_numbers" ON whatsapp_numbers
 CREATE POLICY "Allow public read access on clicks" ON clicks
     FOR SELECT USING (true);
 
--- Políticas para escrita apenas com service role
-CREATE POLICY "Allow service role full access on groups" ON groups
-    FOR ALL USING (auth.role() = 'service_role');
+-- Políticas para escrita (CORRIGIDAS)
+DROP POLICY IF EXISTS "Allow service role full access on groups" ON groups;
+CREATE POLICY "Allow authenticated users to manage groups" ON groups
+    FOR ALL USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Allow service role full access on whatsapp_numbers" ON whatsapp_numbers
-    FOR ALL USING (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Allow service role full access on whatsapp_numbers" ON whatsapp_numbers;
+CREATE POLICY "Allow authenticated users to manage numbers" ON whatsapp_numbers
+    FOR ALL USING (auth.role() = 'authenticated');
 
-CREATE POLICY "Allow service role full access on clicks" ON clicks
-    FOR ALL USING (auth.role() = 'service_role');
+DROP POLICY IF EXISTS "Allow service role full access on clicks" ON clicks;
+CREATE POLICY "Allow public insert on clicks" ON clicks
+    FOR INSERT WITH CHECK (true);
 
 -- ============================================================================
 -- DADOS DE EXEMPLO PARA TESTE
