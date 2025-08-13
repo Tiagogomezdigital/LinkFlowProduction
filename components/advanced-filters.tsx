@@ -1,7 +1,9 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Calendar, Filter } from "lucide-react"
+import { Calendar, Filter, Search } from "lucide-react"
+import { getFilteredStats } from "@/lib/api/stats"
+import { toast } from "sonner"
 import { Button } from "@/components/ui/button"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
@@ -10,8 +12,8 @@ import { Checkbox } from "@/components/ui/checkbox"
 import { cn } from "@/lib/utils"
 import { format, subDays, startOfDay, endOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
-import { getFilteredStats } from "@/lib/api/stats"
-import { toast } from "sonner"
+import { Badge } from "@/components/ui/badge"
+// Imports removidos - não carregamos mais estatísticas
 
 interface Group {
   id: string
@@ -53,83 +55,75 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
     to: endOfDay(todayLocal),
   })
   const [selectedGroups, setSelectedGroups] = useState<string[]>([])
-  const [quickSelect, setQuickSelect] = useState<string>("last7days")
+  const [quickSelect, setQuickSelect] = useState<string>("yesterday")
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const [isGroupFilterOpen, setIsGroupFilterOpen] = useState(false)
-  const [isLoadingStats, setIsLoadingStats] = useState(false)
   const [groupSearch, setGroupSearch] = useState("")
+  const [isLoadingData, setIsLoadingData] = useState(false)
 
   const quickOptions = [
     { value: "today", label: "Hoje", days: 0 },
     { value: "yesterday", label: "Ontem", days: 1 },
-    { value: "specific_date", label: "Data específica", days: -2 },
-    { value: "last7days", label: "Últimos 7 dias", days: 7 },
-    { value: "last30days", label: "Últimos 30 dias", days: 30 },
-    { value: "last90days", label: "Últimos 90 dias", days: 90 },
-    { value: "custom", label: "Período personalizado", days: -1 },
+    { value: "last7days", label: "Últimos 7 Dias", days: 7 },
+    { value: "specific_date", label: "Escolher Dia", days: -2 },
+    { value: "custom", label: "Escolher Período", days: -1 },
   ]
 
-  const loadFilteredStats = useCallback(async () => {
-    if (!dateRange.from || !dateRange.to) return
-    
-    // Exigir que pelo menos um grupo seja selecionado
-    if (selectedGroups.length === 0) {
-      // Limpar stats se não há grupos selecionados
-      onFiltersChange({
-        dateFrom: dateRange.from,
-        dateTo: dateRange.to,
-        groupIds: undefined,
-        stats: undefined,
-      })
+  // Função para buscar dados filtrados com integridade
+  const loadFilteredStats = async () => {
+    if (!dateRange.from || !dateRange.to) {
+      toast.error('Por favor, selecione um período válido')
       return
     }
 
-    setIsLoadingStats(true)
+    setIsLoadingData(true)
     try {
-      const stats = await getFilteredStats(
+      const result = await getFilteredStats(
         dateRange.from,
         dateRange.to,
-        selectedGroups
+        selectedGroups.length > 0 ? selectedGroups : undefined
       )
 
+      // Verificar se os dados foram carregados com sucesso
+      if (result && (result.dailyClicks.length > 0 || result.groupClicks.length > 0)) {
+        onFiltersChange({
+          dateFrom: dateRange.from,
+          dateTo: dateRange.to,
+          groupIds: selectedGroups.length > 0 ? selectedGroups : undefined,
+          stats: result
+        })
+        toast.success('Dados carregados com sucesso!')
+      } else {
+        // Mesmo sem dados, notificar os filtros para limpar resultados anteriores
+        onFiltersChange({
+          dateFrom: dateRange.from,
+          dateTo: dateRange.to,
+          groupIds: selectedGroups.length > 0 ? selectedGroups : undefined,
+          stats: result
+        })
+        toast.info('Nenhum dado encontrado para o período selecionado')
+      }
+    } catch (error) {
+      console.error('Erro ao carregar estatísticas:', error)
+      toast.error('Erro ao carregar dados do servidor')
+    } finally {
+      setIsLoadingData(false)
+    }
+  }
+
+  // Notificar mudanças nos filtros sem carregar estatísticas automaticamente
+  useEffect(() => {
+    if (dateRange.from && dateRange.to) {
       onFiltersChange({
         dateFrom: dateRange.from,
         dateTo: dateRange.to,
-        groupIds: selectedGroups,
-        stats,
-      })
-    } catch (error) {
-      if (process.env.NODE_ENV !== 'production') {
-        console.error("Erro ao carregar estatísticas:", error)
-      }
-      toast.error("Erro ao carregar estatísticas")
-    } finally {
-      setIsLoadingStats(false)
-    }
-  }, [dateRange.from, dateRange.to, selectedGroups])
-
-  // Carregar dados automaticamente quando o componente for montado
-  useEffect(() => {
-    if (dateRange.from && dateRange.to && selectedGroups.length > 0) {
-      loadFilteredStats()
-    }
-  }, []) // Executar apenas uma vez na montagem
-
-  useEffect(() => {
-    if (dateRange.from && dateRange.to) {
-      loadFilteredStats()
-    } else {
-      // Se não houver datas válidas, limpar stats
-      onFiltersChange({
-        dateFrom: dateRange.from || new Date(),
-        dateTo: dateRange.to || new Date(),
-        groupIds: undefined,
-        stats: undefined,
+        groupIds: selectedGroups.length > 0 ? selectedGroups : undefined,
+        stats: undefined, // Não carregar estatísticas automaticamente
       })
     }
-  }, [dateRange, selectedGroups])
+  }, [dateRange, selectedGroups, onFiltersChange])
 
-  const handleQuickSelect = (value: string) => {
+  const handleQuickSelectChange = (value: string) => {
     setQuickSelect(value)
     const option = quickOptions.find((opt) => opt.value === value)
     if (!option || value === "custom" || value === "specific_date") return
@@ -174,9 +168,6 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
       <div className="flex items-center gap-2 text-white text-xl font-semibold mb-2">
         <Filter className="h-5 w-5" />
         Filtros Avançados
-        {isLoadingStats && (
-          <span className="text-sm text-slate-400 ml-2">(Atualizando...)</span>
-        )}
       </div>
       <div className="w-full">
         {/* Mensagem informativa quando nenhum grupo está selecionado */}
@@ -188,139 +179,215 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
           </div>
         )}
         
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
-          {/* Período */}
-          <div className="flex flex-col w-full gap-2">
-            <label className="text-base font-medium text-slate-300">Período</label>
-            <Select value={quickSelect} onValueChange={handleQuickSelect}>
-              <SelectTrigger className="w-full border-slate-600 bg-[#111729] text-slate-300 focus:ring-2 focus:ring-lime-400 transition-all">
-                <SelectValue placeholder="Selecione o período" />
-              </SelectTrigger>
-              <SelectContent className="bg-[#111729] border-slate-600">
-                {quickOptions.map((option) => (
-                  <SelectItem key={option.value} value={option.value} className="text-slate-300 focus:bg-slate-600">
-                    {option.label}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
-            {(quickSelect === 'custom' || quickSelect === 'specific_date') && (
-              <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
-                <PopoverTrigger asChild>
-                  <Button
-                    variant="outline"
-                    className={cn(
-                      "w-full justify-start text-left font-normal border-slate-600 bg-[#111729] text-slate-300 hover:bg-slate-600 mt-2 focus:ring-2 focus:ring-lime-400 transition-all",
-                      !dateRange.from && "text-slate-500",
-                    )}
-                  >
-                    <Calendar className="mr-2 h-4 w-4" />
-                    {dateRange.from ? (
-                      quickSelect === 'specific_date' ? (
-                        format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
-                      ) : dateRange.to ? (
-                        <>
-                          {format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })} -{" "}
-                          {format(dateRange.to, "dd/MM/yyyy", { locale: ptBR })}
-                        </>
+        <div className="space-y-6">
+          {/* Filtros de Data e Grupos */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* Filtro de Data */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <Calendar className="h-4 w-4" />
+                Período
+              </label>
+              <Select value={quickSelect} onValueChange={handleQuickSelectChange}>
+                <SelectTrigger className="w-full border-slate-600 bg-slate-700/50 text-slate-300 focus:ring-2 focus:ring-lime-400 transition-all hover:bg-slate-700">
+                  <SelectValue placeholder="Selecione o período" />
+                </SelectTrigger>
+                <SelectContent className="bg-slate-700 border-slate-600">
+                  {quickOptions.map((option) => (
+                    <SelectItem key={option.value} value={option.value} className="text-slate-200 focus:bg-slate-600 hover:bg-slate-600">
+                      {option.label}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              
+              {(quickSelect === 'custom' || quickSelect === 'specific_date') && (
+                <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
+                  <PopoverTrigger asChild>
+                    <Button
+                      variant="outline"
+                      className={cn(
+                        "w-full justify-start text-left font-normal border-slate-600 bg-slate-700/50 text-slate-300 hover:bg-slate-700 focus:ring-2 focus:ring-lime-400 transition-all",
+                        !dateRange.from && "text-slate-500",
+                      )}
+                    >
+                      <Calendar className="mr-2 h-4 w-4" />
+                      {dateRange.from ? (
+                        quickSelect === 'specific_date' ? (
+                          format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
+                        ) : dateRange.to ? (
+                          <>
+                            {format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })} -{" "}
+                            {format(dateRange.to, "dd/MM/yyyy", { locale: ptBR })}
+                          </>
+                        ) : (
+                          format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
+                        )
                       ) : (
-                        format(dateRange.from, "dd/MM/yyyy", { locale: ptBR })
-                      )
+                        <span>{quickSelect === 'specific_date' ? 'Selecione uma data' : 'Selecione as datas'}</span>
+                      )}
+                    </Button>
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0 bg-slate-700 border-slate-600" align="start">
+                    {quickSelect === 'specific_date' ? (
+                      <CalendarComponent
+                        initialFocus
+                        mode="single"
+                        defaultMonth={dateRange.from}
+                        selected={dateRange.from}
+                        onSelect={(selected: Date | undefined) => {
+                          if (selected) {
+                            setDateRange({
+                              from: startOfDay(selected),
+                              to: endOfDay(selected),
+                            })
+                          }
+                          setIsDatePickerOpen(false)
+                        }}
+                      />
                     ) : (
-                      <span>{quickSelect === 'specific_date' ? 'Selecione uma data' : 'Selecione as datas'}</span>
-                    )}
-                  </Button>
-                </PopoverTrigger>
-                <PopoverContent className="w-auto p-0 bg-slate-700 border-slate-600" align="start">
-                  {quickSelect === 'specific_date' ? (
-                    <CalendarComponent
-                      initialFocus
-                      mode="single"
-                      defaultMonth={dateRange.from}
-                      selected={dateRange.from}
-                      onSelect={(selected: Date | undefined) => {
-                        if (selected) {
+                      <CalendarComponent
+                        initialFocus
+                        mode="range"
+                        defaultMonth={dateRange.from}
+                        selected={{ from: dateRange.from, to: dateRange.to }}
+                        onSelect={(selected) => {
                           setDateRange({
-                            from: startOfDay(selected),
-                            to: endOfDay(selected),
+                            from: selected?.from,
+                            to: selected?.to,
                           })
-                        }
-                        setIsDatePickerOpen(false)
-                      }}
-                    />
-                  ) : (
-                    <CalendarComponent
-                      initialFocus
-                      mode="range"
-                      defaultMonth={dateRange.from}
-                      selected={{ from: dateRange.from, to: dateRange.to }}
-                      onSelect={(selected) => {
-                        setDateRange({
-                          from: selected?.from,
-                          to: selected?.to,
-                        })
-                        setIsDatePickerOpen(false)
-                      }}
-                    />
-                  )}
-                </PopoverContent>
-              </Popover>
-            )}
-          </div>
-          {/* Grupos */}
-          <div className="flex flex-col w-full gap-2">
-            <label className="text-base font-medium text-slate-300">Grupos</label>
-            <div className="relative w-full">
-              <Button
-                variant="outline"
-                className="w-full border-slate-600 bg-[#111729] text-slate-300 flex justify-between items-center focus:ring-2 focus:ring-lime-400 transition-all"
-                onClick={() => setIsGroupFilterOpen((open) => !open)}
-                type="button"
-              >
-                {selectedGroups.length === 0
-                  ? "Selecione"
-                  : `${selectedGroups.length} grupo${selectedGroups.length > 1 ? 's' : ''} selecionado${selectedGroups.length > 1 ? 's' : ''}`}
-              </Button>
-              {isGroupFilterOpen && (
-                <div
-                  className="absolute z-20 mt-2 w-full max-h-72 overflow-y-auto bg-slate-800 border border-slate-600 rounded-lg shadow-lg p-4"
-                  tabIndex={0}
-                  onBlur={(e) => {
-                    // Fecha o modal se o foco sair do container
-                    if (!e.currentTarget.contains(e.relatedTarget)) {
-                      setIsGroupFilterOpen(false)
-                    }
-                  }}
-                  onClick={(e) => e.stopPropagation()}
-                >
-                  <input
-                    type="text"
-                    placeholder="Buscar grupo..."
-                    className="w-full mb-2 px-2 py-1 rounded bg-[#111729] text-slate-200 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400"
-                    value={groupSearch}
-                    onChange={e => setGroupSearch(e.target.value)}
-                    autoFocus
-                  />
-                  <div className="flex gap-2 mb-2">
-                    <Button size="sm" variant="secondary" onClick={selectAllGroups} type="button">Todos</Button>
-                    <Button size="sm" variant="ghost" onClick={clearGroupFilters} type="button">Limpar</Button>
-                  </div>
-                  <div className="flex flex-col gap-1">
-                    {groups
-                      .filter(g => g.name.toLowerCase().includes(groupSearch.toLowerCase()))
-                      .map(g => (
-                        <label key={g.id} className="flex items-center gap-2 cursor-pointer text-slate-200">
-                          <Checkbox
-                            checked={selectedGroups.includes(g.id)}
-                            onCheckedChange={() => handleGroupToggle(g.id)}
-                          />
-                          {g.name}
-                        </label>
-                      ))}
-                  </div>
-                </div>
+                          setIsDatePickerOpen(false)
+                        }}
+                      />
+                    )}
+                  </PopoverContent>
+                </Popover>
               )}
             </div>
+
+            {/* Filtro de Grupos */}
+            <div className="space-y-3">
+              <label className="text-sm font-medium text-slate-300 flex items-center gap-2">
+                <Filter className="h-4 w-4" />
+                Grupos
+                {selectedGroups.length > 0 && (
+                  <Badge variant="secondary" className="bg-lime-500/20 text-lime-400 border-lime-500/30">
+                    {selectedGroups.length}
+                  </Badge>
+                )}
+              </label>
+              <div className="relative w-full">
+                <Button
+                  variant="outline"
+                  className="w-full border-slate-600 bg-slate-700/50 text-slate-300 flex justify-between items-center focus:ring-2 focus:ring-lime-400 transition-all hover:bg-slate-700"
+                  onClick={() => setIsGroupFilterOpen((open) => !open)}
+                  type="button"
+                >
+                  <span>
+                    {selectedGroups.length === 0
+                      ? "Todos os grupos"
+                      : `${selectedGroups.length} grupo${selectedGroups.length > 1 ? 's' : ''} selecionado${selectedGroups.length > 1 ? 's' : ''}`}
+                  </span>
+                  <Filter className="h-4 w-4" />
+                </Button>
+                
+                {isGroupFilterOpen && (
+                  <div
+                    className="absolute z-20 mt-2 w-full max-h-80 overflow-hidden bg-slate-800 border border-slate-600 rounded-lg shadow-xl"
+                    tabIndex={0}
+                    onBlur={(e) => {
+                      if (!e.currentTarget.contains(e.relatedTarget)) {
+                        setIsGroupFilterOpen(false)
+                      }
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    {/* Header do dropdown */}
+                    <div className="p-4 border-b border-slate-600">
+                      <input
+                        type="text"
+                        placeholder="Buscar grupos..."
+                        className="w-full px-3 py-2 rounded-md bg-slate-700 text-slate-200 border border-slate-600 focus:outline-none focus:ring-2 focus:ring-lime-400 focus:border-transparent transition-all"
+                        value={groupSearch}
+                        onChange={e => setGroupSearch(e.target.value)}
+                        autoFocus
+                      />
+                      <div className="flex gap-2 mt-3">
+                        <Button 
+                          size="sm" 
+                          variant="secondary" 
+                          onClick={selectAllGroups} 
+                          type="button"
+                          className="bg-slate-600 hover:bg-slate-500 text-white"
+                        >
+                          Selecionar Todos
+                        </Button>
+                        <Button 
+                          size="sm" 
+                          variant="ghost" 
+                          onClick={clearGroupFilters} 
+                          type="button"
+                          className="text-slate-300 hover:bg-slate-700"
+                        >
+                          Limpar
+                        </Button>
+                      </div>
+                    </div>
+                    
+                    {/* Lista de grupos */}
+                    <div className="max-h-60 overflow-y-auto p-2">
+                      <div className="space-y-1">
+                        {groups
+                          .filter(g => g.name.toLowerCase().includes(groupSearch.toLowerCase()))
+                          .map(g => (
+                            <label 
+                              key={g.id} 
+                              className="flex items-center gap-3 p-3 cursor-pointer text-slate-200 hover:bg-slate-700 rounded-md transition-colors"
+                            >
+                              <Checkbox
+                                checked={selectedGroups.includes(g.id)}
+                                onCheckedChange={() => handleGroupToggle(g.id)}
+                                className="border-slate-500 data-[state=checked]:bg-lime-500 data-[state=checked]:border-lime-500"
+                              />
+                              <div className="flex-1 min-w-0">
+                                <div className="font-medium text-white truncate">{g.name}</div>
+                                <div className="text-xs text-slate-400 font-mono">/{g.slug}</div>
+                              </div>
+                            </label>
+                          ))}
+                      </div>
+                      
+                      {groups.filter(g => g.name.toLowerCase().includes(groupSearch.toLowerCase())).length === 0 && (
+                        <div className="text-center py-8 text-slate-400">
+                          <Filter className="h-8 w-8 mx-auto mb-2 opacity-50" />
+                          <p>Nenhum grupo encontrado</p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+          
+          {/* Botão de Busca */}
+          <div className="flex justify-center pt-4">
+            <Button
+              onClick={loadFilteredStats}
+              disabled={isLoadingData || !dateRange.from || !dateRange.to}
+              size="lg"
+              className="bg-gradient-to-r from-lime-500 to-green-500 hover:from-lime-600 hover:to-green-600 text-black font-semibold px-8 py-3 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-3 shadow-lg hover:shadow-xl transform hover:scale-105"
+            >
+              <Search className="h-5 w-5" />
+              {isLoadingData ? (
+                <>
+                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-black border-t-transparent"></div>
+                  Carregando...
+                </>
+              ) : (
+                'Buscar Dados'
+              )}
+            </Button>
           </div>
         </div>
       </div>

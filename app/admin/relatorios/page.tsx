@@ -2,21 +2,14 @@
 
 import { useState, useCallback } from "react"
 import { AdvancedFilters } from "@/components/advanced-filters"
-import { MetricsCards } from "@/components/metrics-cards"
-import { ClicksChart } from "@/components/clicks-chart"
-import { GroupsChart } from "@/components/groups-chart"
-import { DevicesChart } from "@/components/devices-chart"
-import { TopGroupsTable } from "@/components/top-groups-table"
-import { CountryStatsChart } from "@/components/country-stats-chart"
-import { BrowserStatsChart } from "@/components/browser-stats-chart"
-import { OSStatsChart } from "@/components/os-stats-chart"
-import { UTMStatsChart } from "@/components/utm-stats-chart"
-import { LocationStatsChart } from "@/components/location-stats-chart"
 import { useGroups } from "@/hooks/useGroups"
 import { toast } from "sonner"
-import { Badge } from "@/components/ui/badge"
-import { Download } from "lucide-react"
+import { Download, FileText, TrendingUp, Users, Calendar, Filter } from "lucide-react"
 import { format } from "date-fns"
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 interface Filters {
   dateFrom: Date
@@ -98,125 +91,197 @@ export default function ReportsPage() {
   const totalClicks = filters.stats?.groupClicks?.reduce((s, g) => s + g.clicks, 0) || 0
 
   return (
-    <div className="w-full min-h-screen flex flex-col bg-transparent gap-8">
+    <div className="container mx-auto px-4 py-6 space-y-8 max-w-7xl">
       {/* Breadcrumb */}
-      <nav className="text-xs sm:text-sm text-slate-400 mb-2" aria-label="Breadcrumb">
-        <ol className="inline-flex gap-2">
-          <li><a href="/admin/dashboard" className="hover:underline">Dashboard</a></li>
-          <li>/</li>
-          <li className="text-white">Relatórios</li>
+      <nav className="text-sm text-slate-400" aria-label="Breadcrumb">
+        <ol className="flex items-center space-x-2">
+          <li>
+            <a href="/admin/dashboard" className="hover:text-white transition-colors">
+              Dashboard
+            </a>
+          </li>
+          <li className="text-slate-600">/</li>
+          <li className="text-white font-medium">Relatórios</li>
         </ol>
       </nav>
 
       {/* Header */}
-      <header className="mb-4 flex flex-col sm:flex-row sm:items-end sm:justify-between gap-2">
+      <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
         <div className="space-y-2">
-          <h1 className="text-2xl sm:text-3xl font-bold text-white">Relatórios</h1>
-          <p className="text-slate-400 text-sm sm:text-base">Visualize e exporte relatórios de uso dos seus grupos de WhatsApp</p>
+          <div className="flex items-center gap-3">
+            <div className="p-2 bg-lime-500/10 rounded-lg">
+              <FileText className="h-6 w-6 text-lime-400" />
+            </div>
+            <div>
+              <h1 className="text-3xl font-bold text-white">Relatórios</h1>
+              <p className="text-slate-400">Visualize e exporte relatórios de uso dos seus grupos</p>
+            </div>
+          </div>
         </div>
-      </header>
-
-      {/* Totais rápidos */}
-      {filters.stats?.groupClicks && filters.stats.groupClicks.length>0 && (
-        <div className="text-slate-400 text-sm mb-2">
-          Total de Cliques: <span className="text-white font-medium">{totalClicks}</span> • Grupos com clique: <span className="text-white font-medium">{filters.stats.groupClicks.length}</span>
-        </div>
-      )}
-
-      {/* Filtro Avançado */}
-      <section className="w-full max-w-4xl relative">
-        <AdvancedFilters
-          groups={groups}
-          onFiltersChange={handleFiltersChange}
-          onExport={handleExport}
-        />
+        
         {filters.stats?.groupClicks && (
-          <button
+          <Button
             onClick={handleExport}
-            className="absolute right-4 top-4 bg-lime-400 hover:bg-lime-500 text-black font-semibold px-4 py-2 rounded-lg flex items-center gap-2"
+            className="bg-lime-500 hover:bg-lime-600 text-black font-medium"
+            size="lg"
           >
-            <Download className="h-4 w-4" />
+            <Download className="h-4 w-4 mr-2" />
             Exportar CSV
-          </button>
+          </Button>
         )}
-      </section>
+      </div>
 
-      {/* espaço para alinhamento interno removido */}
-
-      {/* Tabela de grupos filtrados e cliques */}
-      {filters.stats?.groupClicks && (
-        <section className="w-full mt-4">
-          <div className="rounded-xl border border-slate-700 bg-slate-800 shadow-sm w-full max-w-4xl p-4 sm:p-6 md:p-8 transition-all">
-            <h2 className="text-lg font-semibold text-white">Grupos por Cliques</h2>
-            <p className="text-slate-400 text-xs mb-4">Período: {format(filters.dateFrom,'dd/MM/yyyy')} – {format(filters.dateTo,'dd/MM/yyyy')}</p>
-            <ul className="flex flex-col gap-2">
-              {filters.stats.groupClicks.sort((a,b)=>b.clicks-a.clicks).map((group,index)=>(
-                <li key={group.group_id} className="flex items-center justify-between bg-slate-900 rounded px-3 py-2">
-                  <div className="flex items-center gap-3">
-                    <span className="bg-lime-400 text-black font-bold w-6 h-6 flex items-center justify-center rounded-full text-xs">{index+1}</span>
-                    <div className="flex flex-col">
-                      <span className="text-white text-sm">{group.group_name}</span>
-                      <span className="text-slate-400 text-xs font-mono">/{group.group_slug}</span>
-                    </div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-white font-mono">{group.clicks}</div>
-                    <div className="text-lime-400 text-xs font-mono">{totalClicks?((group.clicks/totalClicks)*100).toFixed(1):'0.0'}%</div>
-                  </div>
-                </li>
-              ))}
-            </ul>
-          </div>
-        </section>
-      )}
-
-      {filters.stats?.groupClicks && filters.stats.groupClicks.length === 0 && (
-        <div className="text-center py-20 text-slate-400">Nenhum registro para este período/grupos. <button className="underline" onClick={()=>handleFiltersChange({ ...filters, groupIds: undefined, stats: undefined})}>Limpar filtros</button></div>
-      )}
-
-      {/* Estatísticas Avançadas */}
+      {/* Métricas Rápidas */}
       {filters.stats?.groupClicks && filters.stats.groupClicks.length > 0 && (
-        <section className="w-full mt-8 space-y-6">
-          <div className="mb-6">
-            <h2 className="text-xl font-semibold text-white mb-2">Estatísticas Avançadas</h2>
-            <p className="text-slate-400 text-sm">Análise detalhada de localização, dispositivos e campanhas</p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-400 text-sm font-medium">Total de Cliques</p>
+                  <p className="text-2xl font-bold text-white">{totalClicks.toLocaleString()}</p>
+                </div>
+                <div className="p-3 bg-blue-500/10 rounded-lg">
+                  <TrendingUp className="h-6 w-6 text-blue-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           
-          {/* Grid de estatísticas */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <LocationStatsChart 
-              groupId={filters.groupIds?.[0]} 
-              startDate={format(filters.dateFrom, 'yyyy-MM-dd')} 
-              endDate={format(filters.dateTo, 'yyyy-MM-dd')} 
-            />
-            <DevicesChart 
-               dateFrom={filters.dateFrom} 
-               dateTo={filters.dateTo} 
-               groupIds={filters.groupIds} 
-             />
-          </div>
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-400 text-sm font-medium">Grupos Ativos</p>
+                  <p className="text-2xl font-bold text-white">{filters.stats.groupClicks.length}</p>
+                </div>
+                <div className="p-3 bg-green-500/10 rounded-lg">
+                  <Users className="h-6 w-6 text-green-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
           
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <BrowserStatsChart 
-              groupId={filters.groupIds?.[0]} 
-              startDate={format(filters.dateFrom, 'yyyy-MM-dd')} 
-              endDate={format(filters.dateTo, 'yyyy-MM-dd')} 
-            />
-            <OSStatsChart 
-              groupId={filters.groupIds?.[0]} 
-              startDate={format(filters.dateFrom, 'yyyy-MM-dd')} 
-              endDate={format(filters.dateTo, 'yyyy-MM-dd')} 
-            />
-          </div>
-          
-          <div className="grid grid-cols-1 gap-6">
-            <UTMStatsChart 
-              groupId={filters.groupIds?.[0]} 
-              startDate={format(filters.dateFrom, 'yyyy-MM-dd')} 
-              endDate={format(filters.dateTo, 'yyyy-MM-dd')} 
-            />
-          </div>
-        </section>
+          <Card className="bg-slate-800/50 border-slate-700">
+            <CardContent className="p-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-slate-400 text-sm font-medium">Período</p>
+                  <p className="text-sm font-medium text-white">
+                    {format(filters.dateFrom, 'dd/MM/yyyy')} - {format(filters.dateTo, 'dd/MM/yyyy')}
+                  </p>
+                </div>
+                <div className="p-3 bg-purple-500/10 rounded-lg">
+                  <Calendar className="h-6 w-6 text-purple-400" />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </div>
+      )}
+
+      {/* Filtros */}
+      <Card className="bg-slate-800/30 border-slate-700">
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2 text-white">
+            <Filter className="h-5 w-5" />
+            Filtros de Busca
+          </CardTitle>
+          <CardDescription>
+            Configure os filtros para gerar relatórios personalizados
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <AdvancedFilters
+            groups={groups}
+            onFiltersChange={handleFiltersChange}
+            onExport={handleExport}
+          />
+        </CardContent>
+      </Card>
+
+      {/* Resultados */}
+      {filters.stats?.groupClicks && filters.stats.groupClicks.length > 0 && (
+        <Card className="bg-slate-800/30 border-slate-700">
+          <CardHeader>
+            <CardTitle className="text-white">Ranking de Grupos</CardTitle>
+            <CardDescription>
+              Grupos ordenados por número de cliques no período selecionado
+            </CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3">
+              {filters.stats.groupClicks
+                .sort((a, b) => b.clicks - a.clicks)
+                .map((group, index) => {
+                  const percentage = totalClicks ? ((group.clicks / totalClicks) * 100) : 0
+                  const isTop3 = index < 3
+                  
+                  return (
+                    <div
+                      key={group.group_id}
+                      className={cn(
+                        "flex items-center justify-between p-4 rounded-lg transition-all hover:scale-[1.02]",
+                        isTop3 ? "bg-gradient-to-r from-lime-500/10 to-green-500/10 border border-lime-500/20" : "bg-slate-700/50"
+                      )}
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className={cn(
+                          "flex items-center justify-center w-8 h-8 rounded-full font-bold text-sm",
+                          isTop3 ? "bg-lime-400 text-black" : "bg-slate-600 text-white"
+                        )}>
+                          {index + 1}
+                        </div>
+                        <div className="space-y-1">
+                          <h3 className="font-medium text-white">{group.group_name}</h3>
+                          <p className="text-sm text-slate-400 font-mono">/{group.group_slug}</p>
+                        </div>
+                        {isTop3 && (
+                          <Badge variant="secondary" className="bg-lime-500/20 text-lime-400 border-lime-500/30">
+                            Top {index + 1}
+                          </Badge>
+                        )}
+                      </div>
+                      
+                      <div className="text-right space-y-1">
+                        <div className="text-xl font-bold text-white">
+                          {group.clicks.toLocaleString()}
+                        </div>
+                        <div className="text-sm text-lime-400 font-medium">
+                          {percentage.toFixed(1)}%
+                        </div>
+                      </div>
+                    </div>
+                  )
+                })
+              }
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
+      {/* Estado Vazio */}
+      {filters.stats?.groupClicks && filters.stats.groupClicks.length === 0 && (
+        <Card className="bg-slate-800/30 border-slate-700">
+          <CardContent className="py-16">
+            <div className="text-center space-y-4">
+              <div className="p-4 bg-slate-700/50 rounded-full w-16 h-16 mx-auto flex items-center justify-center">
+                <FileText className="h-8 w-8 text-slate-400" />
+              </div>
+              <div className="space-y-2">
+                <h3 className="text-lg font-medium text-white">Nenhum dado encontrado</h3>
+                <p className="text-slate-400">Não há registros para o período e grupos selecionados.</p>
+              </div>
+              <Button
+                variant="outline"
+                onClick={() => handleFiltersChange({ ...filters, groupIds: undefined, stats: undefined })}
+                className="border-slate-600 text-slate-300 hover:bg-slate-700"
+              >
+                Limpar Filtros
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
       )}
     </div>
   )
