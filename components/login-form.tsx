@@ -35,23 +35,29 @@ export function LoginForm() {
     setIsLoading(true)
 
     try {
-      console.log("🔐 Iniciando login com auth-helpers...")
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("🔐 Iniciando login com auth-helpers...")
+      }
 
       const { data, error } = await supabase.auth.signInWithPassword({
         email: email.trim(),
         password: password.trim(),
       })
 
-      console.log("📊 Resultado do login:", {
-        success: !error,
-        hasUser: !!data?.user,
-        hasSession: !!data?.session,
-        userId: data?.user?.id,
-        error: error?.message,
-      })
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("📊 Resultado do login:", {
+          success: !error,
+          hasUser: !!data?.user,
+          hasSession: !!data?.session,
+          userId: data?.user?.id,
+          error: error?.message,
+        })
+      }
 
       if (error) {
-        console.error("❌ Erro de login:", error)
+        if (process.env.NODE_ENV !== 'production') {
+          console.error("❌ Erro de login:", error)
+        }
         toast({
           variant: "destructive",
           title: "Erro no login",
@@ -61,7 +67,9 @@ export function LoginForm() {
       }
 
       if (data?.user && data?.session) {
-        console.log("✅ Login bem-sucedido! Sessão criada.")
+        if (process.env.NODE_ENV !== 'production') {
+          console.log("✅ Login bem-sucedido! Sessão criada.")
+        }
 
         toast({
           title: "Login realizado com sucesso!",
@@ -81,14 +89,18 @@ export function LoginForm() {
       }
 
       // Se chegou aqui, algo deu errado
-      console.error("❌ Login sem erro mas sem sessão válida")
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("❌ Login sem erro mas sem sessão válida")
+      }
       toast({
         variant: "destructive",
         title: "Erro inesperado",
         description: "Login realizado mas sessão não foi criada",
       })
     } catch (error) {
-      console.error("❌ Erro inesperado:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("❌ Erro inesperado:", error)
+      }
       toast({
         variant: "destructive",
         title: "Erro inesperado",

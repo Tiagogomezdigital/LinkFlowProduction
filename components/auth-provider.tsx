@@ -42,17 +42,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           data: { session: currentSession },
         } = await supabase.auth.getSession()
 
-        console.log("🔍 AuthProvider - Sessão verificada (inicial):", {
-          hasSession: !!currentSession,
-          hasUser: !!currentSession?.user,
-          userId: currentSession?.user?.id,
-        })
+        if (process.env.NODE_ENV !== 'production') {
+          console.log("🔍 AuthProvider - Sessão verificada (inicial):", {
+            hasSession: !!currentSession,
+            hasUser: !!currentSession?.user,
+            userId: currentSession?.user?.id,
+          })
+        }
 
         setSession(currentSession || null)
         setUser(currentSession?.user || null)
         setLoading(false)
       } catch (error) {
-        console.error("❌ Erro ao verificar sessão:", error)
+        if (process.env.NODE_ENV !== 'production') {
+          console.error("❌ Erro ao verificar sessão:", error)
+        }
         setSession(null)
         setUser(null)
         setLoading(false)
@@ -64,22 +68,26 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const {
         data: { subscription },
       } = supabase.auth.onAuthStateChange(async (event, newSession) => {
-        console.log("🔄 AuthProvider - Mudança de estado:", {
-          event,
-          hasSession: !!newSession,
-          hasUser: !!newSession?.user,
-          userId: newSession?.user?.id,
-        })
+        if (process.env.NODE_ENV !== 'production') {
+          console.log("🔄 AuthProvider - Mudança de estado:", {
+            event,
+            hasSession: !!newSession,
+            hasUser: !!newSession?.user,
+            userId: newSession?.user?.id,
+          })
+        }
 
         // Atualizar estado apenas se realmente mudou
         setSession((prevSession) => {
           const sessionChanged = !!newSession !== !!prevSession || newSession?.user?.id !== prevSession?.user?.id
 
           if (sessionChanged) {
-            console.log("📝 Atualizando sessão:", {
-              from: prevSession?.user?.id,
-              to: newSession?.user?.id,
-            })
+            if (process.env.NODE_ENV !== 'production') {
+              console.log("📝 Atualizando sessão:", {
+                from: prevSession?.user?.id,
+                to: newSession?.user?.id,
+              })
+            }
             return newSession || null
           }
 
@@ -90,10 +98,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           const userChanged = !!newSession?.user !== !!prevUser || newSession?.user?.id !== prevUser?.id
 
           if (userChanged) {
-            console.log("👤 Atualizando usuário:", {
-              from: prevUser?.id,
-              to: newSession?.user?.id,
-            })
+            if (process.env.NODE_ENV !== 'production') {
+              console.log("👤 Atualizando usuário:", {
+                from: prevUser?.id,
+                to: newSession?.user?.id,
+              })
+            }
             return newSession?.user || null
           }
 
@@ -104,7 +114,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
         // Apenas recarregar em logout
         if (event === "SIGNED_OUT") {
-          console.log("🚪 Usuário deslogado, recarregando página")
+          if (process.env.NODE_ENV !== 'production') {
+            console.log("🚪 Usuário deslogado, recarregando página")
+          }
           window.location.reload()
         }
       })
@@ -120,7 +132,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     // Cleanup function
     return () => {
       if (subscriptionRef.current) {
-        console.log("🧹 Limpando subscription do auth listener")
+        if (process.env.NODE_ENV !== 'production') {
+          console.log("🧹 Limpando subscription do auth listener")
+        }
         subscriptionRef.current.unsubscribe()
         subscriptionRef.current = null
       }

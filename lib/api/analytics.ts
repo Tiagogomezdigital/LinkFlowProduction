@@ -17,7 +17,9 @@ export async function getGroupAnalytics(groupId: string): Promise<GroupAnalytics
     })
 
     if (error) {
-      console.error("Error fetching group analytics:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error fetching group analytics:", error)
+      }
       throw error
     }
 
@@ -45,7 +47,9 @@ export async function getGroupAnalytics(groupId: string): Promise<GroupAnalytics
       avg_clicks_per_number: Number(analytics.avg_clicks_per_number) || 0,
     }
   } catch (error) {
-    console.error("Error in getGroupAnalytics:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in getGroupAnalytics:", error)
+    }
     return null
   }
 }

@@ -15,7 +15,9 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       "unknown"
     const referrer = request.headers.get("referer") || ""
 
-    console.log(`🔍 Redirecionamento via API para slug: ${slug}`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`🔍 Redirecionamento via API para slug: ${slug}`)
+    }
 
     // Detectar tipo de dispositivo
     const deviceType = userAgent.toLowerCase().includes("mobile") ? "mobile" : "desktop"
@@ -25,10 +27,14 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       group_slug: slug,
     })
 
-    console.log("📊 Resultado da função get_next_number:", { numberData, numberError })
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("📊 Resultado da função get_next_number:", { numberData, numberError })
+    }
 
     if (numberError || !numberData || numberData.length === 0) {
-      console.error("❌ Erro ao buscar número:", numberError)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("❌ Erro ao buscar número:", numberError)
+      }
       return NextResponse.redirect(
         new URL("/error", process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_LINK_BASE_URL || request.url),
       )
@@ -36,12 +42,14 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
     const { number_id, phone, final_message } = numberData[0]
 
-    console.log("✅ Dados obtidos:", {
-      number_id,
-      phone,
-      final_message,
-      slug,
-    })
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("✅ Dados obtidos:", {
+        number_id,
+        phone,
+        final_message,
+        slug,
+      })
+    }
 
     // Registrar clique usando a função padronizada register_click
     const { error: clickError } = await supabase.rpc("register_click", {
@@ -54,22 +62,30 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     })
 
     if (clickError) {
-      console.error("⚠️ Erro ao registrar clique:", clickError)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("⚠️ Erro ao registrar clique:", clickError)
+      }
       // Não bloquear o redirecionamento por erro de clique
     } else {
-      console.log("✅ Clique registrado com sucesso!")
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("✅ Clique registrado com sucesso!")
+      }
     }
 
     // Construir URL do WhatsApp
     const message = encodeURIComponent(final_message || "Olá! Vim através do link.")
     const whatsappUrl = `https://wa.me/${phone.replace(/\D/g, "")}?text=${message}`
 
-    console.log("🚀 Redirecionando para:", whatsappUrl)
-    console.log("💬 Mensagem final:", final_message)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("🚀 Redirecionando para:", whatsappUrl)
+      console.log("💬 Mensagem final:", final_message)
+    }
 
     return NextResponse.redirect(whatsappUrl)
   } catch (error) {
-    console.error("💥 Erro no redirecionamento:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("💥 Erro no redirecionamento:", error)
+    }
     return NextResponse.redirect(
       new URL("/error", process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_LINK_BASE_URL || request.url),
     )

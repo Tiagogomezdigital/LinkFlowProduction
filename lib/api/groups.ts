@@ -6,13 +6,17 @@ export async function getGroups(): Promise<Group[]> {
     const { data, error } = await supabase.from("groups").select("*").order("created_at", { ascending: false })
 
     if (error) {
-      console.error("Error fetching groups:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error fetching groups:", error)
+      }
       throw error
     }
 
     return data || []
   } catch (error) {
-    console.error("Error in getGroups:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in getGroups:", error)
+    }
     return []
   }
 }
@@ -22,13 +26,17 @@ export async function getGroupById(id: string): Promise<Group | null> {
     const { data, error } = await supabase.from("groups").select("*").eq("id", id).single()
 
     if (error) {
-      console.error("Error fetching group:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error fetching group:", error)
+      }
       throw error
     }
 
     return data
   } catch (error) {
-    console.error("Error in getGroupById:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in getGroupById:", error)
+    }
     return null
   }
 }
@@ -38,13 +46,17 @@ export async function getGroupBySlug(slug: string): Promise<Group | null> {
     const { data, error } = await supabase.from("groups").select("*").eq("slug", slug).eq("is_active", true).single()
 
     if (error) {
-      console.error("Error fetching group by slug:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error fetching group by slug:", error)
+      }
       throw error
     }
 
     return data
   } catch (error) {
-    console.error("Error in getGroupBySlug:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in getGroupBySlug:", error)
+    }
     return null
   }
 }
@@ -59,13 +71,17 @@ export async function createGroup(groupData: {
     const { data, error } = await supabase.from("groups").insert([groupData]).select().single()
 
     if (error) {
-      console.error("Error creating group:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error creating group:", error)
+      }
       throw error
     }
 
     return data
   } catch (error) {
-    console.error("Error in createGroup:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in createGroup:", error)
+    }
     throw error
   }
 }
@@ -75,13 +91,17 @@ export async function updateGroup(id: string, updates: Partial<Group>): Promise<
     const { data, error } = await supabase.from("groups").update(updates).eq("id", id).select().single()
 
     if (error) {
-      console.error("Error updating group:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error updating group:", error)
+      }
       throw error
     }
 
     return data
   } catch (error) {
-    console.error("Error in updateGroup:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in updateGroup:", error)
+    }
     throw error
   }
 }
@@ -91,7 +111,9 @@ export async function deleteGroup(id: string): Promise<void> {
     const { data, error } = await supabase.from("groups").delete().eq("id", id).select()
 
     if (error) {
-      console.error("Error deleting group:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error deleting group:", error)
+      }
       throw error
     }
 
@@ -99,7 +121,9 @@ export async function deleteGroup(id: string): Promise<void> {
       throw new Error("A exclusão falhou. Verifique as permissões ou se o grupo ainda existe.")
     }
   } catch (error) {
-    console.error("Error in deleteGroup:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in deleteGroup:", error)
+    }
     throw error
   }
 }
@@ -124,11 +148,15 @@ export async function registerClick(clickData: {
     })
 
     if (error) {
-      console.error("Error registering click:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error registering click:", error)
+      }
       throw error
     }
   } catch (error) {
-    console.error("Error in registerClick:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in registerClick:", error)
+    }
     throw error
   }
 }

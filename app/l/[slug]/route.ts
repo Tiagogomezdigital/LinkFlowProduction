@@ -17,7 +17,9 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       "unknown"
     const referrer = request.headers.get("referer") || ""
 
-    console.log(`🔍 Iniciando redirecionamento para slug: ${slug}`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`🔍 Iniciando redirecionamento para slug: ${slug}`)
+    }
 
     // Detectar tipo de dispositivo
     const deviceType = userAgent.toLowerCase().includes("mobile") ? "mobile" : "desktop"
@@ -27,10 +29,14 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
       group_slug: slug,
     })
 
-    console.log("📊 Resultado da função get_next_number:", { numberData, numberError })
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("📊 Resultado da função get_next_number:", { numberData, numberError })
+    }
 
     if (numberError || !numberData || numberData.length === 0) {
-      console.error("❌ Erro ao buscar número:", numberError)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("❌ Erro ao buscar número:", numberError)
+      }
       return NextResponse.redirect(
         new URL("/error", process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_LINK_BASE_URL || request.url),
       )
@@ -38,22 +44,26 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
 
     const { number_id, phone, final_message } = numberData[0]
 
-    console.log("✅ Dados obtidos:", {
-      number_id,
-      phone,
-      final_message,
-      slug,
-    })
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("✅ Dados obtidos:", {
+        number_id,
+        phone,
+        final_message,
+        slug,
+      })
+    }
 
     // Registrar clique usando a função padronizada register_click
-    console.log("🔍 Dados para registrar clique:", {
-      group_slug: slug,
-      number_phone: phone,
-      ip_address: ip,
-      user_agent: userAgent,
-      device_type: deviceType,
-      referrer: referrer,
-    })
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("🔍 Dados para registrar clique:", {
+        group_slug: slug,
+        number_phone: phone,
+        ip_address: ip,
+        user_agent: userAgent,
+        device_type: deviceType,
+        referrer: referrer,
+      })
+    }
 
     const { error: clickError, data: clickData } = await supabase.rpc("register_click", {
       group_slug: slug,
@@ -65,9 +75,13 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     })
 
     if (clickError) {
-      console.error("⚠️ Erro ao registrar clique:", JSON.stringify(clickError, null, 2))
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("⚠️ Erro ao registrar clique:", JSON.stringify(clickError, null, 2))
+      }
     } else {
-      console.log("✅ Clique registrado com sucesso!", clickData)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("✅ Clique registrado com sucesso!", clickData)
+      }
     }
 
     // Construir URL do WhatsApp
@@ -77,12 +91,14 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     const message = encodeURIComponent(final_message || "Olá! Vim através do link.")
     const whatsappUrl = `https://wa.me/${phoneWithCountryCode}?text=${message}`
 
-    console.log("📱 Número formatado:", {
-      original: phone,
-      cleaned: cleanPhone,
-      withCountryCode: phoneWithCountryCode,
-      whatsappUrl,
-    })
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("📱 Número formatado:", {
+        original: phone,
+        cleaned: cleanPhone,
+        withCountryCode: phoneWithCountryCode,
+        whatsappUrl,
+      })
+    }
 
     // Em vez de redirecionamento direto, ir para página intermediária
     const redirectUrl = new URL("/redirect", process.env.NEXT_PUBLIC_SITE_URL || request.url)
@@ -90,11 +106,15 @@ export async function GET(request: NextRequest, { params }: { params: { slug: st
     redirectUrl.searchParams.set("phone", phone)
     redirectUrl.searchParams.set("group", slug)
 
-    console.log("🚀 Redirecionando para página intermediária:", redirectUrl.toString())
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("🚀 Redirecionando para página intermediária:", redirectUrl.toString())
+    }
 
     return NextResponse.redirect(redirectUrl)
   } catch (error) {
-    console.error("💥 Erro no redirecionamento:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("💥 Erro no redirecionamento:", error)
+    }
     return NextResponse.redirect(
       new URL("/error", process.env.NEXT_PUBLIC_SITE_URL || process.env.NEXT_PUBLIC_LINK_BASE_URL || request.url),
     )

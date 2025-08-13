@@ -12,29 +12,39 @@ export default function HomePage() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        console.log("🏠 Página inicial - Verificando autenticação...")
+        if (process.env.NODE_ENV !== 'production') {
+          console.log("🏠 Página inicial - Verificando autenticação...")
+        }
 
         const {
           data: { session },
         } = await supabase.auth.getSession()
 
-        console.log("🔍 Verificando sessão na página inicial:", {
-          hasSession: !!session,
-          hasUser: !!session?.user,
-          userId: session?.user?.id,
-          environment: process.env.NODE_ENV,
-          url: typeof window !== "undefined" ? window.location.href : "SSR",
-        })
+        if (process.env.NODE_ENV !== 'production') {
+          console.log("🔍 Verificando sessão na página inicial:", {
+            hasSession: !!session,
+            hasUser: !!session?.user,
+            userId: session?.user?.id,
+            environment: process.env.NODE_ENV,
+            url: typeof window !== "undefined" ? window.location.href : "SSR",
+          })
+        }
 
         if (session?.user) {
-          console.log("✅ Usuário logado, redirecionando para dashboard")
+          if (process.env.NODE_ENV !== 'production') {
+            console.log("✅ Usuário logado, redirecionando para dashboard")
+          }
           router.replace("/admin/grupos")
         } else {
-          console.log("❌ Usuário não logado, redirecionando para login")
+          if (process.env.NODE_ENV !== 'production') {
+            console.log("❌ Usuário não logado, redirecionando para login")
+          }
           router.replace("/login")
         }
       } catch (error) {
-        console.error("❌ Erro ao verificar sessão:", error)
+        if (process.env.NODE_ENV !== 'production') {
+          console.error("❌ Erro ao verificar sessão:", error)
+        }
         router.replace("/login")
       } finally {
         setIsChecking(false)

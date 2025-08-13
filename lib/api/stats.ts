@@ -1,19 +1,25 @@
-import { supabase } from "@/lib/supabase"
+import { supabase, supabasePublic } from "@/lib/supabase"
 import type { GroupStats, DailyStats, DeviceStats, GroupClickStats, Click } from "@/lib/types"
 import { createClient } from "@/lib/supabase"
 
 export async function getGroupStats(): Promise<GroupStats[]> {
   try {
-    console.log(`[${new Date().toISOString()}] 🔍 Buscando estatísticas dos grupos...`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[${new Date().toISOString()}] 🔍 Buscando estatísticas dos grupos...`)
+    }
 
     const { data, error } = await supabase.rpc("get_group_stats")
 
     if (error) {
-      console.error(`[${new Date().toISOString()}] ❌ Erro ao buscar group stats:`, error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error(`[${new Date().toISOString()}] ❌ Erro ao buscar group stats:`, error)
+      }
       throw error
     }
 
-    console.log(`[${new Date().toISOString()}] ✅ Dados recebidos do banco:`, data)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[${new Date().toISOString()}] ✅ Dados recebidos do banco:`, data)
+    }
 
     // Mapear os dados para o formato esperado
     const mappedData = (data || []).map((item: any) => ({
@@ -25,10 +31,14 @@ export async function getGroupStats(): Promise<GroupStats[]> {
       total_clicks: Number(item.total_clicks) || 0,
     }))
 
-    console.log(`[${new Date().toISOString()}] 📊 Dados mapeados:`, mappedData)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`[${new Date().toISOString()}] 📊 Dados mapeados:`, mappedData)
+    }
     return mappedData
   } catch (error) {
-    console.error(`[${new Date().toISOString()}] ❌ Erro em getGroupStats:`, error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error(`[${new Date().toISOString()}] ❌ Erro em getGroupStats:`, error)
+    }
     return []
   }
 }
@@ -326,54 +336,25 @@ export async function getFilteredStats(
   groupIds?: string[]
 ): Promise<FilteredStats> {
   try {
-    console.log("🔍 Buscando estatísticas filtradas...", { dateFrom, dateTo, groupIds })
+    console.log("🔍 Buscando estatísticas filtradas via API...", { dateFrom, dateTo, groupIds })
 
-    // Buscar todos os cliques do período/grupos, incluindo join com groups
-    // Removendo limite padrão do Supabase para evitar cap de 1000 registros
-    let query = supabase
-      .from("clicks")
-      .select("group_id, created_at, groups(id, name, slug)")
-      .gte("created_at", dateFrom.toISOString())
-      .lte("created_at", dateTo.toISOString())
-      .limit(50000) // Limite alto para evitar problemas de performance
+    // Construir URL da API
+    const params = new URLSearchParams({
+      dateFrom: dateFrom.toISOString(),
+      dateTo: dateTo.toISOString(),
+    })
 
     if (groupIds?.length) {
-      query = query.in("group_id", groupIds)
+      params.set('groupIds', groupIds.join(','))
     }
 
-    const { data, error } = await query
-    if (error) throw error
-
-    // Agrupar por dia
-    const stats = new Map<string, number>()
-    const startDate = new Date(dateFrom)
-    const endDate = new Date(dateTo)
-    for (let d = new Date(startDate); d <= endDate; d.setDate(d.getDate() + 1)) {
-      stats.set(d.toISOString().split("T")[0], 0)
+    const response = await fetch(`/api/stats/filtered?${params.toString()}`)
+    if (!response.ok) {
+      throw new Error(`Erro na API: ${response.status} ${response.statusText}`)
     }
-    data?.forEach((click: any) => {
-      const date = new Date(click.created_at).toISOString().split("T")[0]
-      stats.set(date, (stats.get(date) || 0) + 1)
-    })
 
-    // Agrupar por grupo
-    const groupMap = new Map<string, { group_id: string, group_name: string, group_slug: string, clicks: number }>()
-    data?.forEach((click: any) => {
-      const group_id = click.group_id
-      const group_name = click.groups?.name || "(Sem nome)"
-      const group_slug = click.groups?.slug || ""
-      if (!groupMap.has(group_id)) {
-        groupMap.set(group_id, { group_id, group_name, group_slug, clicks: 0 })
-      }
-      groupMap.get(group_id)!.clicks++
-    })
-    const groupClicks = Array.from(groupMap.values()).sort((a, b) => b.clicks - a.clicks)
-
-    const result = {
-      dailyClicks: Array.from(stats.entries()).map(([date, clicks]) => ({ date, clicks })),
-      groupClicks,
-    }
-    console.log("✅ Estatísticas filtradas processadas:", result)
+    const result = await response.json()
+    console.log("✅ Estatísticas filtradas recebidas da API:", result)
     return result
   } catch (error) {
     console.error("❌ Erro em getFilteredStats:", error)

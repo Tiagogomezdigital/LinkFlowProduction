@@ -31,31 +31,40 @@ export async function middleware(req: NextRequest) {
     // Página de erro pública
     const isErrorRoute = path === "/error"
 
+    // Rotas de API públicas
+    const isPublicApiRoute = path.startsWith("/api/stats/filtered")
+
     // Lista consolidada de rotas que NÃO exigem autenticação
-    const isPublicRoute = isLoginRoute || isAuthCallback || isRedirectRoute || isErrorRoute
+    const isPublicRoute = isLoginRoute || isAuthCallback || isRedirectRoute || isErrorRoute || isPublicApiRoute
 
     // Log detalhado para debug
-    console.log("🛡️ Middleware Debug:", {
-      path,
-      hasSession: !!session,
-      hasValidUser,
-      userId: session?.user?.id,
-      isPublicRoute,
-      isLoginRoute,
-      isAuthCallback,
-      userAgent: req.headers.get("user-agent")?.substring(0, 50),
-      timestamp: new Date().toISOString(),
-    })
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("🛡️ Middleware Debug:", {
+        path,
+        hasSession: !!session,
+        hasValidUser,
+        userId: session?.user?.id,
+        isPublicRoute,
+        isLoginRoute,
+        isAuthCallback,
+        userAgent: req.headers.get("user-agent")?.substring(0, 50),
+        timestamp: new Date().toISOString(),
+      })
+    }
 
     // Permitir callback de auth sem verificação
     if (isAuthCallback) {
-      console.log("✅ Permitindo acesso ao callback de auth")
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("✅ Permitindo acesso ao callback de auth")
+      }
       return res
     }
 
     // Bloquear qualquer rota privada quando não houver sessão
     if (!isPublicRoute && !hasValidUser) {
-      console.log("❌ Acesso negado (rota privada), redirecionando para login")
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("❌ Acesso negado (rota privada), redirecionando para login")
+      }
 
       // Evitar loops de redirecionamento
       if (!req.headers.get("referer")?.includes("/login")) {
@@ -66,7 +75,9 @@ export async function middleware(req: NextRequest) {
 
     // Redirecionar se já logado e tentar acessar login
     if (isLoginRoute && hasValidUser) {
-      console.log("✅ Usuário já logado tentando acessar login, redirecionando para dashboard")
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("✅ Usuário já logado tentando acessar login, redirecionando para dashboard")
+      }
 
       // Evitar loops de redirecionamento
       if (!req.headers.get("referer")?.includes("/admin/grupos")) {

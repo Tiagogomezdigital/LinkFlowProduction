@@ -6,9 +6,11 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
 const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  console.error("⚠️ Variáveis de ambiente do Supabase não configuradas!")
-  console.error("URL:", supabaseUrl)
-  console.error("Key:", supabaseAnonKey ? "Definida" : "Não definida")
+  if (process.env.NODE_ENV !== 'production') {
+    console.error("⚠️ Variáveis de ambiente do Supabase não configuradas!")
+    console.error("URL:", supabaseUrl)
+    console.error("Key:", supabaseAnonKey ? "Definida" : "Não definida")
+  }
 }
 
 // Cliente para componentes (usando auth-helpers para melhor compatibilidade SSR)
@@ -43,15 +45,19 @@ export const supabaseAdmin = supabaseServiceKey
 // Função para verificar se a API key está sendo enviada corretamente
 export async function checkApiKey() {
   try {
-    console.log("🔍 Verificando configuração do Supabase...")
-    console.log("URL:", supabaseUrl)
-    console.log("API Key (primeiros 20 chars):", supabaseAnonKey?.substring(0, 20) + "...")
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("🔍 Verificando configuração do Supabase...")
+      console.log("URL:", supabaseUrl)
+      console.log("API Key (primeiros 20 chars):", supabaseAnonKey?.substring(0, 20) + "...")
+    }
 
     // Usar cliente público para teste
     const { data, error } = await supabasePublic.from("groups").select("id").limit(10)
 
     if (error) {
-      console.error("❌ Erro na requisição:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("❌ Erro na requisição:", error)
+      }
       return {
         success: false,
         error: error.message,
@@ -60,7 +66,9 @@ export async function checkApiKey() {
     }
 
     const count = data?.length || 0
-    console.log(`✅ API Key funcionando corretamente! ${count} grupos encontrados`)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log(`✅ API Key funcionando corretamente! ${count} grupos encontrados`)
+    }
 
     return {
       success: true,
@@ -70,7 +78,9 @@ export async function checkApiKey() {
       keyPrefix: supabaseAnonKey?.substring(0, 20) + "...",
     }
   } catch (error: any) {
-    console.error("❌ Erro ao verificar API key:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("❌ Erro ao verificar API key:", error)
+    }
     return {
       success: false,
       error: error.message,
@@ -86,11 +96,13 @@ export async function checkAuth() {
 }
 
 // Log para debug
-console.log("🚀 Cliente Supabase inicializado com auth-helpers")
-console.log("📍 URL:", supabaseUrl)
-console.log("🔑 API Key configurada:", !!supabaseAnonKey)
-console.log("👑 Service Role configurada:", !!supabaseServiceKey)
-console.log("🌍 Environment:", process.env.NODE_ENV)
+if (process.env.NODE_ENV !== 'production') {
+  console.log("🚀 Cliente Supabase inicializado com auth-helpers")
+  console.log("📍 URL:", supabaseUrl)
+  console.log("🔑 API Key configurada:", !!supabaseAnonKey)
+  console.log("👑 Service Role configurada:", !!supabaseServiceKey)
+  console.log("🌍 Environment:", process.env.NODE_ENV)
+}
 
 export function createClient() {
   const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL

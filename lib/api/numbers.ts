@@ -10,27 +10,35 @@ export async function getAllNumbers(): Promise<WhatsAppNumber[]> {
       .order("created_at", { ascending: false })
 
     if (error) {
-      console.error("Error fetching all numbers:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error fetching all numbers:", error)
+      }
       throw error
     }
 
     return data || []
   } catch (error) {
-    console.error("Error in getAllNumbers:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in getAllNumbers:", error)
+    }
     return []
   }
 }
 
 export async function getNumbersByGroupId(groupId: string): Promise<WhatsAppNumber[]> {
   try {
-    console.log("Fetching numbers for group:", groupId)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("Fetching numbers for group:", groupId)
+    }
 
     const { data, error } = await supabase.rpc("get_numbers_by_group_id", {
       p_group_id: groupId,
     })
 
     if (error) {
-      console.error("Error fetching numbers by group:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error fetching numbers by group:", error)
+      }
       // Fallback para query direta se a função falhar
       const { data: fallbackData, error: fallbackError } = await supabase
         .from("whatsapp_numbers")
@@ -39,18 +47,26 @@ export async function getNumbersByGroupId(groupId: string): Promise<WhatsAppNumb
         .order("created_at", { ascending: false })
 
       if (fallbackError) {
-        console.error("Fallback query also failed:", fallbackError)
+        if (process.env.NODE_ENV !== 'production') {
+          console.error("Fallback query also failed:", fallbackError)
+        }
         throw fallbackError
       }
 
-      console.log("Using fallback data:", fallbackData)
+      if (process.env.NODE_ENV !== 'production') {
+        console.log("Using fallback data:", fallbackData)
+      }
       return fallbackData || []
     }
 
-    console.log("Numbers fetched successfully:", data)
+    if (process.env.NODE_ENV !== 'production') {
+      console.log("Numbers fetched successfully:", data)
+    }
     return data || []
   } catch (error) {
-    console.error("Error in getNumbersByGroupId:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in getNumbersByGroupId:", error)
+    }
     return []
   }
 }
@@ -66,13 +82,17 @@ export async function getNumbers(groupId?: string): Promise<WhatsAppNumber[]> {
     const { data, error } = await query
 
     if (error) {
-      console.error("Error fetching numbers:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error fetching numbers:", error)
+      }
       throw error
     }
 
     return data || []
   } catch (error) {
-    console.error("Error in getNumbers:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in getNumbers:", error)
+    }
     return []
   }
 }
@@ -85,13 +105,17 @@ export async function getNextNumber(groupSlug: string): Promise<WhatsAppNumber |
     })
 
     if (error) {
-      console.error("Error getting next number:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error getting next number:", error)
+      }
       throw error
     }
 
     return data && data.length > 0 ? data[0] : null
   } catch (error) {
-    console.error("Error in getNextNumber:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in getNextNumber:", error)
+    }
     return null
   }
 }
@@ -119,13 +143,17 @@ export async function createNumber(numberData: {
       .single()
 
     if (error) {
-      console.error("Error creating number:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error creating number:", error)
+      }
       throw error
     }
 
     return data
   } catch (error) {
-    console.error("Error in createNumber:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in createNumber:", error)
+    }
     throw error
   }
 }
@@ -135,13 +163,17 @@ export async function updateNumber(id: string, updates: Partial<WhatsAppNumber>)
     const { data, error } = await supabase.from("whatsapp_numbers").update(updates).eq("id", id).select().single()
 
     if (error) {
-      console.error("Error updating number:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error updating number:", error)
+      }
       throw error
     }
 
     return data
   } catch (error) {
-    console.error("Error in updateNumber:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in updateNumber:", error)
+    }
     throw error
   }
 }
@@ -151,7 +183,9 @@ export async function deleteNumber(id: string): Promise<void> {
     const { data, error } = await supabase.from("whatsapp_numbers").delete().eq("id", id).select()
 
     if (error) {
-      console.error("Error deleting number:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error deleting number:", error)
+      }
       throw error
     }
 
@@ -159,7 +193,9 @@ export async function deleteNumber(id: string): Promise<void> {
       throw new Error("A exclusão falhou. Verifique as permissões ou se o número ainda existe.")
     }
   } catch (error) {
-    console.error("Error in deleteNumber:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in deleteNumber:", error)
+    }
     throw error
   }
 }
@@ -174,13 +210,17 @@ export async function toggleNumberStatus(id: string, isActive: boolean): Promise
       .single()
 
     if (error) {
-      console.error("Error toggling number status:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Error toggling number status:", error)
+      }
       throw error
     }
 
     return data
   } catch (error) {
-    console.error("Error in toggleNumberStatus:", error)
+    if (process.env.NODE_ENV !== 'production') {
+      console.error("Error in toggleNumberStatus:", error)
+    }
     throw error
   }
 }

@@ -31,7 +31,7 @@ export async function getUltraSafeGroupAnalytics(groupId: string) {
       .select("*")
       .eq("group_id", groupId)
       .order("created_at", { ascending: false })
-      .limit(1000) // Limitar para performance
+      .limit(50000) // Limite alto para evitar problemas de performance
 
     if (clicksError) {
       console.error("❌ Erro ao buscar cliques:", clicksError)
@@ -187,4 +187,4 @@ export async function exportUltraSafeGroupData(groupId: string) {
       error: error.message,
     }
   }
-} 
+}

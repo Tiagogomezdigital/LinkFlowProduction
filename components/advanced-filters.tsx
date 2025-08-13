@@ -1,15 +1,12 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { Calendar, Filter, Download, X } from "lucide-react"
+import { useState, useEffect, useCallback } from "react"
+import { Calendar, Filter } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar as CalendarComponent } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Checkbox } from "@/components/ui/checkbox"
-import { Badge } from "@/components/ui/badge"
-import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
 import { format, subDays, startOfDay, endOfDay } from "date-fns"
 import { ptBR } from "date-fns/locale"
@@ -47,12 +44,16 @@ interface AdvancedFiltersProps {
 }
 
 export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }: AdvancedFiltersProps) {
+  // Inicializar com últimos 7 dias por padrão
+  const now = new Date()
+  const todayLocal = new Date(now.getFullYear(), now.getMonth(), now.getDate())
+  
   const [dateRange, setDateRange] = useState<{ from: Date | undefined; to: Date | undefined }>({
-    from: startOfDay(new Date()),
-    to: endOfDay(new Date()),
+    from: startOfDay(subDays(todayLocal, 6)), // Últimos 7 dias
+    to: endOfDay(todayLocal),
   })
   const [selectedGroups, setSelectedGroups] = useState<string[]>([])
-  const [quickSelect, setQuickSelect] = useState<string>("today")
+  const [quickSelect, setQuickSelect] = useState<string>("last7days")
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false)
   const [isGroupFilterOpen, setIsGroupFilterOpen] = useState(false)
   const [isLoadingStats, setIsLoadingStats] = useState(false)
@@ -68,7 +69,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
     { value: "custom", label: "Período personalizado", days: -1 },
   ]
 
-  const loadFilteredStats = async () => {
+  const loadFilteredStats = useCallback(async () => {
     if (!dateRange.from || !dateRange.to) return
 
     setIsLoadingStats(true)
@@ -91,13 +92,20 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
     } finally {
       setIsLoadingStats(false)
     }
-  }
+  }, [dateRange.from, dateRange.to, selectedGroups, onFiltersChange])
+
+  // Carregar dados automaticamente quando o componente for montado
+  useEffect(() => {
+    if (dateRange.from && dateRange.to) {
+      loadFilteredStats()
+    }
+  }, []) // Executar apenas uma vez na montagem
 
   useEffect(() => {
-    if (dateRange.from && dateRange.to && selectedGroups.length > 0) {
+    if (dateRange.from && dateRange.to) {
       loadFilteredStats()
     } else {
-      // Se não houver grupos selecionados, limpar stats
+      // Se não houver datas válidas, limpar stats
       onFiltersChange({
         dateFrom: dateRange.from || new Date(),
         dateTo: dateRange.to || new Date(),
@@ -105,7 +113,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
         stats: undefined,
       })
     }
-  }, [dateRange, selectedGroups])
+  }, [dateRange, selectedGroups, loadFilteredStats])
 
   const handleQuickSelect = (value: string) => {
     setQuickSelect(value)
@@ -223,7 +231,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
                       mode="range"
                       defaultMonth={dateRange.from}
                       selected={{ from: dateRange.from, to: dateRange.to }}
-                      onSelect={(selected: { from: Date | undefined; to: Date | undefined } | undefined) => {
+                      onSelect={(selected) => {
                         setDateRange({
                           from: selected?.from,
                           to: selected?.to,
