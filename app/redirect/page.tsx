@@ -4,17 +4,26 @@ import { useEffect, useState } from "react"
 import { useSearchParams } from "next/navigation"
 import { Loader2, MessageCircle, CheckCircle, Search, Users } from "lucide-react"
 
-export default function RedirectPage() {
+function RedirectPageContent() {
   const searchParams = useSearchParams()
   const [step, setStep] = useState(1) // 1: verificando, 2: vaga encontrada, 3: redirecionando
   const [countdown, setCountdown] = useState(2)
+  const [isClient, setIsClient] = useState(false)
+  
   const whatsappUrl = searchParams.get("to")
   const phone = searchParams.get("phone")
   const group = searchParams.get("group")
 
+  // Garantir que estamos no cliente
   useEffect(() => {
-    if (!whatsappUrl) {
-      window.location.href = "/"
+    setIsClient(true)
+  }, [])
+
+  useEffect(() => {
+    if (!isClient || !whatsappUrl) {
+      if (isClient && !whatsappUrl && typeof window !== 'undefined') {
+        window.location.href = "/"
+      }
       return
     }
 
@@ -34,7 +43,9 @@ export default function RedirectPage() {
         setCountdown((prev) => {
           if (prev <= 1) {
             clearInterval(timer)
-            window.location.href = whatsappUrl
+            if (typeof window !== 'undefined') {
+              window.location.href = whatsappUrl
+            }
             return 0
           }
           return prev - 1
@@ -47,7 +58,22 @@ export default function RedirectPage() {
       clearTimeout(foundTimer)
       clearTimeout(redirectTimer)
     }
-  }, [whatsappUrl])
+  }, [whatsappUrl, isClient])
+
+  // Mostrar loading enquanto não estiver no cliente
+  if (!isClient) {
+    return (
+      <div className="min-h-screen bg-black flex items-center justify-center p-4">
+        <div className="max-w-md w-full bg-slate-800 border border-slate-700 rounded-2xl p-6 text-center">
+          <div className="w-20 h-20 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-6">
+            <Loader2 className="w-10 h-10 text-white animate-spin" />
+          </div>
+          <h1 className="text-2xl font-bold text-white mb-2">Carregando...</h1>
+          <p className="text-slate-400 mb-6">Preparando redirecionamento...</p>
+        </div>
+      </div>
+    )
+  }
 
   const formatPhoneForDisplay = (phoneNumber: string) => {
     if (!phoneNumber) return "Carregando..."
@@ -157,7 +183,11 @@ export default function RedirectPage() {
 
             {/* Botão manual */}
             <button
-              onClick={() => whatsappUrl && (window.location.href = whatsappUrl)}
+              onClick={() => {
+                if (whatsappUrl && typeof window !== 'undefined') {
+                  window.location.href = whatsappUrl
+                }
+              }}
               className="w-full bg-lime-400 hover:bg-lime-500 text-black font-semibold py-3 px-6 rounded-lg transition-colors"
             >
               Ir Agora
@@ -174,4 +204,8 @@ export default function RedirectPage() {
       </div>
     </div>
   )
+}
+
+export default function RedirectPage() {
+  return <RedirectPageContent />
 }

@@ -36,7 +36,9 @@ export function EnvSetupPage() {
 
         // Redirecionar para admin após sucesso
         setTimeout(() => {
-          window.location.href = "/admin/dashboard"
+          if (typeof window !== 'undefined') {
+            window.location.href = "/admin/dashboard"
+          }
         }, 2000)
       } else {
         toast({
@@ -125,6 +127,8 @@ export function EnvSetupPage() {
   }
 
   const exportResults = () => {
+    if (typeof document === 'undefined') return
+    
     const dataStr = JSON.stringify(testResults, null, 2)
     const dataBlob = new Blob([dataStr], { type: "application/json" })
     const url = URL.createObjectURL(dataBlob)
@@ -289,19 +293,19 @@ export function EnvSetupPage() {
                               <div className="flex justify-between">
                                 <span className="text-green-400">Sucessos:</span>
                                 <span className="text-white">
-                                  {category.tests.filter((t) => t.status === "success").length}
+                                  {category.tests.filter((t: any) => t.status === "success").length}
                                 </span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-yellow-400">Avisos:</span>
                                 <span className="text-white">
-                                  {category.tests.filter((t) => t.status === "warning").length}
+                                  {category.tests.filter((t: any) => t.status === "warning").length}
                                 </span>
                               </div>
                               <div className="flex justify-between">
                                 <span className="text-red-400">Erros:</span>
                                 <span className="text-white">
-                                  {category.tests.filter((t) => t.status === "error").length}
+                                  {category.tests.filter((t: any) => t.status === "error").length}
                                 </span>
                               </div>
                             </div>
@@ -314,7 +318,7 @@ export function EnvSetupPage() {
                   {testResults.map((category, categoryIndex) => (
                     <TabsContent key={categoryIndex} value={`category-${categoryIndex}`} className="space-y-4">
                       <div className="space-y-3">
-                        {category.tests.map((test, testIndex) => (
+                        {category.tests.map((test: any, testIndex: number) => (
                           <Card key={testIndex} className={`${getStatusColor(test.status)}`}>
                             <CardContent className="p-4">
                               <div className="flex items-start justify-between">
@@ -376,7 +380,11 @@ export function EnvSetupPage() {
         {connectionResult?.success && (
           <div className="text-center">
             <Button
-              onClick={() => (window.location.href = "/admin/dashboard")}
+              onClick={() => {
+                if (typeof window !== 'undefined') {
+                  window.location.href = "/admin/dashboard"
+                }
+              }}
               className="bg-lime-400 hover:bg-lime-500 text-black font-medium px-8 py-3"
             >
               Ir para o Dashboard

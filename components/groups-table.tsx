@@ -101,12 +101,21 @@ export function GroupsTable() {
 
   const copyPublicLink = (slug: string) => {
     const publicUrl = `${ENV_CONFIG.SITE_URL}/l/${slug}`
-    navigator.clipboard.writeText(publicUrl)
-    toast({
-      title: "Link copiado!",
-      description: "O link público foi copiado para a área de transferência.",
-      variant: "default",
-    })
+    
+    if (typeof window !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(publicUrl)
+      toast({
+        title: "Link copiado!",
+        description: "O link público foi copiado para a área de transferência.",
+        variant: "default",
+      })
+    } else {
+      toast({
+        title: "Erro ao copiar",
+        description: "Não foi possível copiar o link. Tente novamente.",
+        variant: "destructive",
+      })
+    }
   }
 
   const getStatsForGroup = (groupId: string) => {

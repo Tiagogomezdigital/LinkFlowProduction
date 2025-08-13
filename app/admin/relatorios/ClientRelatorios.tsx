@@ -44,6 +44,8 @@ export default function ClientRelatorios() {
   }
 
   function handleExport() {
+    if (typeof document === 'undefined') return;
+    
     const dados = somarCliquesPorGrupo(data, groups);
     const csv = generateCSV(dados);
     const blob = new Blob([csv], { type: "text/csv" });
@@ -110,4 +112,4 @@ export default function ClientRelatorios() {
       </section>
     </main>
   );
-} 
+}

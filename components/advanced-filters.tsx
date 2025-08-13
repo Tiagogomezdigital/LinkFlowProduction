@@ -106,7 +106,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
     } finally {
       setIsLoadingStats(false)
     }
-  }, [dateRange.from, dateRange.to, selectedGroups, onFiltersChange])
+  }, [dateRange.from, dateRange.to, selectedGroups])
 
   // Carregar dados automaticamente quando o componente for montado
   useEffect(() => {
@@ -127,7 +127,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
         stats: undefined,
       })
     }
-  }, [dateRange, selectedGroups, loadFilteredStats])
+  }, [dateRange, selectedGroups])
 
   const handleQuickSelect = (value: string) => {
     setQuickSelect(value)

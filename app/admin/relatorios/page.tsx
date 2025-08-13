@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useCallback } from "react"
 import { AdvancedFilters } from "@/components/advanced-filters"
 import { MetricsCards } from "@/components/metrics-cards"
 import { ClicksChart } from "@/components/clicks-chart"
@@ -37,11 +37,16 @@ interface Filters {
 }
 
 function downloadCsv(filename: string, rows: string[][]) {
+  if (typeof document === 'undefined') return
+  
   const processRow = (row: string[]) =>
     row
-      .map((val) => {
-        const inner = val.replace(/"/g, '""')
-        return /[",\n]/.test(inner) ? `"${inner}"` : inner
+      .map((field) => {
+        let result = field || ''
+        if (result.search(/["\n\r,]/g) >= 0) {
+          result = '"' + result.replace(/"/g, '""') + '"'
+        }
+        return result
       })
       .join(',')
 
@@ -62,9 +67,9 @@ export default function ReportsPage() {
     dateTo: new Date(),
   })
 
-  const handleFiltersChange = (newFilters: Filters) => {
+  const handleFiltersChange = useCallback((newFilters: Filters) => {
     setFilters(newFilters)
-  }
+  }, [])
 
   const handleExport = async () => {
     try {

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { AlertCircle, ArrowLeft, MessageCircle, Phone } from "lucide-react"
@@ -7,8 +8,13 @@ import Link from "next/link"
 import { useSearchParams } from "next/navigation"
 
 export default function ErrorPage() {
+  const [isClient, setIsClient] = useState(false)
   const searchParams = useSearchParams()
   const errorType = searchParams.get("type") || "unknown"
+
+  useEffect(() => {
+    setIsClient(true)
+  }, [])
 
   const getErrorInfo = () => {
     switch (errorType) {
@@ -62,7 +68,11 @@ export default function ErrorPage() {
 
           <div className="flex flex-col gap-2">
             <Button
-              onClick={() => window.history.back()}
+              onClick={() => {
+                if (isClient && typeof window !== 'undefined') {
+                  window.history.back()
+                }
+              }}
               variant="outline"
               className="w-full border-slate-600 text-slate-300 hover:bg-slate-700"
             >
@@ -71,7 +81,11 @@ export default function ErrorPage() {
             </Button>
 
             <Button
-              onClick={() => window.location.reload()}
+              onClick={() => {
+                if (isClient && typeof window !== 'undefined') {
+                  window.location.reload()
+                }
+              }}
               className="w-full bg-lime-600 hover:bg-lime-700 text-white"
             >
               <MessageCircle className="h-4 w-4 mr-2" />

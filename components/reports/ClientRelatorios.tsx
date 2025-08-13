@@ -13,6 +13,8 @@ export default function ClientRelatorios() {
   const { data, loading, error } = useReportData(filters)
 
   function handleExport() {
+    if (typeof document === 'undefined') return
+    
     const csv = generateCSV(data)
     const blob = new Blob([csv], { type: "text/csv" })
     const url = URL.createObjectURL(blob)
@@ -50,4 +52,4 @@ export default function ClientRelatorios() {
       </section>
     </main>
   )
-} 
+}

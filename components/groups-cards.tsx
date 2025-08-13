@@ -211,7 +211,9 @@ export function GroupsCards({ searchTerm = "" }: GroupsCardsProps) {
 
   const openPublicLink = (slug: string) => {
     const publicUrl = `${ENV_CONFIG.SITE_URL}/l/${slug}`
-    window.open(publicUrl, "_blank", "noopener,noreferrer")
+    if (typeof window !== 'undefined') {
+      window.open(publicUrl, "_blank", "noopener,noreferrer")
+    }
   }
 
   const formatPhoneNumber = (phone: string) => {

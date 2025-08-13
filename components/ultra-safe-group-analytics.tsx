@@ -48,15 +48,17 @@ export function UltraSafeGroupAnalytics({ groupId }: UltraSafeGroupAnalyticsProp
 
       if (result.success) {
         // Download do arquivo
-        const blob = new Blob([JSON.stringify(result.data, null, 2)], {
-          type: "application/json",
-        })
-        const url = URL.createObjectURL(blob)
-        const a = document.createElement("a")
-        a.href = url
-        a.download = result.filename || "analytics.json"
-        a.click()
-        URL.revokeObjectURL(url)
+        if (typeof document !== 'undefined') {
+          const blob = new Blob([JSON.stringify(result.data, null, 2)], {
+            type: "application/json",
+          })
+          const url = URL.createObjectURL(blob)
+          const a = document.createElement("a")
+          a.href = url
+          a.download = result.filename || "analytics.json"
+          a.click()
+          URL.revokeObjectURL(url)
+        }
       }
     } catch (err: any) {
       console.error("❌ Erro na exportação:", err)
@@ -295,4 +297,4 @@ export function UltraSafeGroupAnalytics({ groupId }: UltraSafeGroupAnalyticsProp
       </Tabs>
     </div>
   )
-} 
+}

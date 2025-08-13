@@ -95,7 +95,15 @@ export default function GroupsPage() {
           {viewMode === "table" ? <GroupsTable /> : <GroupsCards searchTerm={searchTerm} />}
         </div>
 
-        <AddGroupDialog open={addGroupOpen} onOpenChange={setAddGroupOpen} onGroupAdded={() => window.location.reload()} />
+        <AddGroupDialog 
+          open={addGroupOpen} 
+          onOpenChange={setAddGroupOpen} 
+          onGroupAdded={() => {
+            if (typeof window !== 'undefined') {
+              window.location.reload()
+            }
+          }} 
+        />
       </div>
     </div>
   )

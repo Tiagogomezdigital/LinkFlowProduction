@@ -10,9 +10,18 @@ interface LogEntry {
 export default function LogPage() {
   const [logs, setLogs] = useState<LogEntry[]>([]);
   const [paused, setPaused] = useState(false);
+  const [isClient, setIsClient] = useState(false);
   const logsEndRef = useRef<HTMLDivElement>(null);
 
+  // Garantir que estamos no cliente
   useEffect(() => {
+    setIsClient(true);
+  }, []);
+
+  useEffect(() => {
+    // Só interceptar logs no cliente
+    if (!isClient) return;
+    
     // Intercepta os logs do console
     const origLog = console.log;
     const origError = console.error;
@@ -49,13 +58,25 @@ export default function LogPage() {
       console.error = origError;
       console.warn = origWarn;
     };
-  }, [paused]);
+  }, [paused, isClient]);
 
   useEffect(() => {
-    if (!paused && logsEndRef.current) {
+    if (isClient && !paused && logsEndRef.current) {
       logsEndRef.current.scrollIntoView({ behavior: "smooth" });
     }
-  }, [logs, paused]);
+  }, [logs, paused, isClient]);
+
+  // Mostrar loading enquanto não estiver no cliente
+  if (!isClient) {
+    return (
+      <div className="max-w-3xl mx-auto p-6">
+        <h1 className="text-2xl font-bold mb-4">Log do Sistema (Frontend)</h1>
+        <div className="bg-black text-white rounded p-4 h-[60vh] overflow-y-auto border border-slate-700 text-sm font-mono flex items-center justify-center">
+          <div className="text-slate-400">Carregando interceptador de logs...</div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-3xl mx-auto p-6">
@@ -91,4 +112,4 @@ export default function LogPage() {
       <p className="mt-4 text-xs text-slate-400">Logs capturados apenas do frontend desta aba. Recarregue para reiniciar a captura.</p>
     </div>
   );
-} 
+}

@@ -117,7 +117,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           if (process.env.NODE_ENV !== 'production') {
             console.log("🚪 Usuário deslogado, recarregando página")
           }
-          window.location.reload()
+          if (typeof window !== 'undefined') {
+            window.location.reload()
+          }
         }
       })
 
