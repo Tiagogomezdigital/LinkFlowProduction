@@ -13,8 +13,18 @@ if (!supabaseUrl || !supabaseAnonKey) {
   }
 }
 
-// Cliente para componentes (usando auth-helpers para melhor compatibilidade SSR)
-export const supabase = createClientComponentClient()
+// Cliente principal para componentes (usando auth-helpers para melhor compatibilidade SSR)
+let _supabaseClient: any = null
+
+export function getSupabaseClient() {
+  if (!_supabaseClient) {
+    _supabaseClient = createClientComponentClient()
+  }
+  return _supabaseClient
+}
+
+// Cliente principal exportado (singleton)
+export const supabase = getSupabaseClient()
 
 // Cliente alternativo para operações que não precisam de auth
 export const supabasePublic = createSupabaseClient(supabaseUrl || "", supabaseAnonKey || "", {

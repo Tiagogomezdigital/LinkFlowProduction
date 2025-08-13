@@ -1,19 +1,9 @@
-import { createClient } from "@supabase/supabase-js"
 import { createServerComponentClient } from "@supabase/auth-helpers-nextjs";
 import { cookies } from "next/headers";
+import { getSupabaseClient } from "./supabase";
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL!
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-
-// Cliente específico para autenticação - SEM headers customizados
-export const supabaseAuth = createClient(supabaseUrl, supabaseAnonKey, {
-  auth: {
-    persistSession: true,
-    autoRefreshToken: true,
-    detectSessionInUrl: true,
-    flowType: "pkce",
-  },
-})
+// Usar o cliente centralizado para autenticação
+export const supabaseAuth = getSupabaseClient()
 
 // Função de login simplificada
 export async function loginUser(email: string, password: string) {

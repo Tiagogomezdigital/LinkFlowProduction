@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname, useRouter } from "next/navigation"
 import { Users, Phone, BarChart2, CalendarDays, Activity, LogOut, ChevronLeft } from "lucide-react"
-import { createClientComponentClient } from "@supabase/auth-helpers-nextjs"
+import { getSupabaseClient } from "@/lib/supabase"
 
 interface AppSidebarProps {
   onClose?: () => void
@@ -12,7 +12,7 @@ interface AppSidebarProps {
 export function AppSidebar({ onClose }: AppSidebarProps) {
   const pathname = usePathname()
   const router = useRouter()
-  const supabase = createClientComponentClient()
+  const supabase = getSupabaseClient()
 
   const isActive = (path: string) => {
     return pathname === path

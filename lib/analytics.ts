@@ -1,7 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
-import { ENV_CONFIG } from "@/lib/env-config";
+import { getSupabaseClient } from "@/lib/supabase";
 
-const supabase = createClient(ENV_CONFIG.SUPABASE_URL, ENV_CONFIG.SUPABASE_ANON_KEY);
+const supabase = getSupabaseClient();
 
 export async function getDashboardStats() {
   // Exemplo: total de cliques, cliques do dia, top grupos
@@ -20,4 +19,4 @@ export async function getTrends(days = 7) {
   // Exemplo: tendências dos últimos 7 dias
   const { data } = await supabase.rpc("get_clicks_trends", { days }); // Supondo função SQL
   return data || [];
-} 
+}

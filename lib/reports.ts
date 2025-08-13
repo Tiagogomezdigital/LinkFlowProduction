@@ -1,7 +1,6 @@
-import { createClient } from "@supabase/supabase-js";
-import { ENV_CONFIG } from "@/lib/env-config";
+import { getSupabaseClient } from "@/lib/supabase";
 
-const supabase = createClient(ENV_CONFIG.SUPABASE_URL, ENV_CONFIG.SUPABASE_ANON_KEY);
+const supabase = getSupabaseClient();
 
 export interface ReportFilter {
   startDate?: string;
@@ -25,4 +24,4 @@ export function generateCSV(data: any[]): string {
   const headers = Object.keys(data[0]);
   const rows = data.map((row: any) => headers.map(h => JSON.stringify(row[h] ?? "")).join(","));
   return [headers.join(","), ...rows].join("\n");
-} 
+}
