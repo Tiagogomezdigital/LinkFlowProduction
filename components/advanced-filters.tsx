@@ -71,23 +71,37 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
 
   const loadFilteredStats = useCallback(async () => {
     if (!dateRange.from || !dateRange.to) return
+    
+    // Exigir que pelo menos um grupo seja selecionado
+    if (selectedGroups.length === 0) {
+      // Limpar stats se não há grupos selecionados
+      onFiltersChange({
+        dateFrom: dateRange.from,
+        dateTo: dateRange.to,
+        groupIds: undefined,
+        stats: undefined,
+      })
+      return
+    }
 
     setIsLoadingStats(true)
     try {
       const stats = await getFilteredStats(
         dateRange.from,
         dateRange.to,
-        selectedGroups.length > 0 ? selectedGroups : undefined
+        selectedGroups
       )
 
       onFiltersChange({
         dateFrom: dateRange.from,
         dateTo: dateRange.to,
-        groupIds: selectedGroups.length > 0 ? selectedGroups : undefined,
+        groupIds: selectedGroups,
         stats,
       })
     } catch (error) {
-      console.error("Erro ao carregar estatísticas:", error)
+      if (process.env.NODE_ENV !== 'production') {
+        console.error("Erro ao carregar estatísticas:", error)
+      }
       toast.error("Erro ao carregar estatísticas")
     } finally {
       setIsLoadingStats(false)
@@ -96,7 +110,7 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
 
   // Carregar dados automaticamente quando o componente for montado
   useEffect(() => {
-    if (dateRange.from && dateRange.to) {
+    if (dateRange.from && dateRange.to && selectedGroups.length > 0) {
       loadFilteredStats()
     }
   }, []) // Executar apenas uma vez na montagem
@@ -165,6 +179,15 @@ export function AdvancedFilters({ groups, onFiltersChange, onExport, isLoading }
         )}
       </div>
       <div className="w-full">
+        {/* Mensagem informativa quando nenhum grupo está selecionado */}
+        {selectedGroups.length === 0 && (
+          <div className="mb-4 p-3 bg-amber-900/20 border border-amber-700 rounded-lg">
+            <p className="text-amber-300 text-sm">
+              💡 <strong>Dica:</strong> Selecione pelo menos um grupo para visualizar os relatórios de cliques.
+            </p>
+          </div>
+        )}
+        
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
           {/* Período */}
           <div className="flex flex-col w-full gap-2">
