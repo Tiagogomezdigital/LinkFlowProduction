@@ -3,7 +3,7 @@
 import type React from "react"
 import { createContext, useContext, useEffect, useState, useRef } from "react"
 import { getSupabaseClient } from "@/lib/supabase"
-import type { Session, User } from "@supabase/supabase-js"
+import type { Session, User, AuthChangeEvent } from "@supabase/supabase-js"
 
 type AuthContextType = {
   session: Session | null
@@ -67,7 +67,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const setupAuthListener = () => {
       const {
         data: { subscription },
-      } = supabase.auth.onAuthStateChange(async (event, newSession) => {
+      } = supabase.auth.onAuthStateChange(async (event: AuthChangeEvent, newSession: Session | null) => {
         if (process.env.NODE_ENV !== 'production') {
           console.log("🔄 AuthProvider - Mudança de estado:", {
             event,
